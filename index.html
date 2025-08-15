@@ -1,0 +1,2103 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alë! Events | Роскошное свадебное агентство в Москве</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            /* Accent now warm taupe instead of gold */
+            --gold: #A07C5B;
+            --gold-light: #EADBC8;
+            --gold-dark: #7C5A3D;
+            /* Light theme surface colors */
+            --black: #FAF8F4; /* page background (ivory) */
+            --dark: #F1EEE8;  /* slightly darker ivory */
+            --white: #1A1A1A; /* primary text color (dark) */
+            /* Text tones for light background */
+            --text-light: rgba(0,0,0,0.75);
+            --text-soft: rgba(0,0,0,0.6);
+            --text-white: rgba(0,0,0,0.9);
+            --gradient-gold: linear-gradient(45deg, var(--gold), var(--gold-light));
+            --gradient-dark: linear-gradient(135deg, var(--dark), var(--black));
+            --shadow-gold: 0 0 20px rgba(160,124,91,0.25);
+            --shadow-dark: 0 20px 40px rgba(0,0,0,0.12);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--black);
+            color: var(--white);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* =============== СКРОЛЛ ПРОГРЕСС БАР =============== */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gold), var(--gold-light));
+            z-index: 10001;
+            transition: width 0.1s ease;
+            box-shadow: 0 0 10px rgba(160,124,91,0.4);
+        }
+
+        /* =============== ЭПИЧНАЯ ЗАГРУЗОЧНАЯ ЗАСТАВКА =============== */
+        .loader-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #FAF8F4 0%, #F1EEE8 50%, #FAF8F4 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            transition: all 1.5s ease-out;
+        }
+
+        .loader-container.hidden {
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(1.1);
+        }
+
+        .loader-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 5rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 3rem;
+            text-align: center;
+            letter-spacing: 4px;
+            opacity: 0;
+            animation: logoReveal 2s ease-out forwards;
+            text-shadow: 
+                0 0 50px rgba(160,124,91,0.6),
+                0 8px 16px rgba(0,0,0,0.9);
+        }
+
+        .loader-crown {
+            font-size: 4rem;
+            color: var(--gold);
+            margin-bottom: 2rem;
+            animation: crownFloat 3s ease-in-out infinite;
+            text-shadow: 0 0 30px rgba(160,124,91,0.45);
+            font-family: serif;
+        }
+        
+        .loader-crown::before {
+            content: "♔";
+        }
+
+        .loader-text {
+            font-size: 1.5rem;
+            font-weight: 300;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 3rem;
+            opacity: 0;
+            animation: textReveal 2s 0.5s ease-out forwards;
+            color: var(--text-light);
+        }
+
+        .loader-progress {
+            width: 300px;
+            height: 3px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .loader-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold));
+            background-size: 200% 100%;
+            border-radius: 10px;
+            width: 0%;
+            animation: progressFill 3s ease-out forwards, shimmer 2s ease-in-out infinite;
+            box-shadow: 0 0 20px rgba(160,124,91,0.45);
+        }
+
+        .loader-percentage {
+            font-size: 1.2rem;
+            color: var(--gold);
+            font-weight: 400;
+            opacity: 0;
+            animation: percentReveal 3s ease-out forwards;
+        }
+
+        @keyframes logoReveal {
+            0% { opacity: 0; transform: translateY(50px) scale(0.8); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes textReveal {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes crownFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+        }
+
+        @keyframes progressFill {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        @keyframes percentReveal {
+            0% { opacity: 0; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes titleGlow {
+            0% { filter: drop-shadow(0 0 20px rgba(160,124,91,0.25)); }
+            100% { filter: drop-shadow(0 0 30px rgba(160,124,91,0.4)); }
+        }
+
+        /* =============== ГЛАВНЫЙ КОНТЕНТ =============== */
+        .main-content {
+            opacity: 0;
+            transition: opacity 1s ease-in;
+        }
+
+        .main-content.loaded {
+            opacity: 1;
+        }
+
+        /* =============== РОСКОШНЫЙ ХЕДЕР =============== */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(212,175,55,0.3);
+            z-index: 1000;
+            padding: 1rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .header.scrolled {
+            background: rgba(255,255,255,0.95);
+            box-shadow: 0 4px 30px rgba(0,0,0,0.3);
+            border-bottom-color: rgba(212,175,55,0.5);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 3rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+            color: var(--white);
+        }
+
+        .logo-crown {
+            font-size: 2.5rem;
+            color: var(--gold);
+            text-shadow: 0 0 20px rgba(212,175,55,0.5);
+            font-family: serif;
+        }
+        
+        .logo-crown::before {
+            content: "♔";
+        }
+
+        .logo-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.2rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            background: linear-gradient(45deg, var(--gold), var(--gold-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 3rem;
+        }
+
+        .nav-menu a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 400;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            position: relative;
+            transition: all 0.3s ease;
+            padding: 0.5rem 0;
+        }
+
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--gold), var(--gold-light));
+            transition: width 0.3s ease;
+        }
+
+        .nav-menu a:hover {
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        .nav-menu a:hover::after {
+            width: 100%;
+        }
+
+        .cta-header {
+            padding: 0.8rem 2rem;
+            background: transparent;
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .cta-header:hover {
+            background: var(--gold);
+            color: #1A1A1A;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(212,175,55,0.3);
+        }
+
+        /* =============== HERO СЕКЦИЯ LUXURY STYLE =============== */
+        .hero {
+            height: 100vh;
+            background: 
+                linear-gradient(
+                    rgba(255,255,255,0.6), 
+                    rgba(255,255,255,0.8)
+                ),
+                url('https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80') center/cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, transparent 0%, rgba(255,255,255,0.3) 100%);
+        }
+
+
+
+        .hero-content {
+            z-index: 10;
+            max-width: 800px;
+            padding: 2rem;
+        }
+
+        .hero-crown {
+            font-size: 5rem;
+            color: var(--gold);
+            margin-bottom: 2rem;
+            text-shadow: 0 0 30px rgba(212,175,55,0.6);
+            animation: heroFloat 6s ease-in-out infinite;
+            font-family: serif;
+        }
+        
+        .hero-crown::before {
+            content: "♔";
+        }
+
+        .hero-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(3rem, 8vw, 7rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--white);
+            text-shadow: 
+                0 0 30px rgba(160,124,91,0.35),
+                0 4px 8px rgba(0,0,0,0.7);
+            letter-spacing: 3px;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            font-weight: 300;
+            margin-bottom: 1rem;
+            color: var(--text-light);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .hero-description {
+            font-size: 1.3rem;
+            margin-bottom: 3rem;
+            color: var(--text-soft);
+            line-height: 1.6;
+            font-weight: 300;
+        }
+
+        .hero-cta {
+            display: inline-block;
+            padding: 1.5rem 3rem;
+            background: linear-gradient(45deg, var(--gold), var(--gold-light));
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(160,124,91,0.28);
+        }
+
+        .hero-cta:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(160,124,91,0.4);
+        }
+
+        @keyframes heroFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+
+
+
+        .cta-button {
+            display: inline-block;
+            padding: 1.2rem 3rem;
+            background: linear-gradient(135deg, 
+                rgba(212,175,55,0.2) 0%, 
+                rgba(212,175,55,0.1) 50%, 
+                rgba(212,175,55,0.2) 100%);
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 400;
+            font-size: 1rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            transition: all 0.4s ease;
+            box-shadow: 
+                0 8px 24px rgba(0,0,0,0.3),
+                0 0 0 1px rgba(212,175,55,0.3),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+            opacity: 0;
+            animation: fadeInUp 1.5s 1.8s ease-out forwards;
+            position: relative;
+            backdrop-filter: blur(20px);
+            overflow: hidden;
+        }
+
+        .cta-button:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255,255,255,0.2), 
+                transparent);
+            transition: left 0.6s ease;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px) scale(1.02);
+            background: linear-gradient(135deg, 
+                rgba(212,175,55,0.3) 0%, 
+                rgba(212,175,55,0.2) 50%, 
+                rgba(212,175,55,0.3) 100%);
+            box-shadow: 
+                0 12px 32px rgba(0,0,0,0.4),
+                0 0 0 1px rgba(212,175,55,0.5),
+                0 0 20px rgba(212,175,55,0.2),
+                inset 0 1px 0 rgba(255,255,255,0.2);
+        }
+
+        .cta-button:hover:before {
+            left: 100%;
+        }
+
+        .cta-button:active {
+            transform: translateY(-1px) scale(1);
+            box-shadow: 
+                0 6px 16px rgba(0,0,0,0.3),
+                0 0 0 1px rgba(212,175,55,0.4),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+
+
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* БАЗОВЫЕ СТИЛИ СЕКЦИЙ */
+        .section {
+            padding: 8rem 3rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* PREMIUM SERVICES SECTION */
+        .services {
+            padding: 8rem 3rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--black);
+        }
+
+        .section-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            text-align: center;
+            margin-bottom: 4rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            position: relative;
+            background: linear-gradient(45deg, var(--gold), var(--gold-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 20px rgba(160,124,91,0.3));
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 1px;
+            background: var(--gradient-gold);
+            box-shadow: var(--shadow-gold);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 3rem;
+            margin-top: 5rem;
+        }
+
+        .service-card {
+            background: #ffffff;
+            padding: 3rem 2.5rem;
+            border-radius: 8px;
+            border: 1px solid rgba(0,0,0,0.08);
+            text-align: center;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+        }
+
+        .service-card:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, 
+                rgba(160,124,91,0.08) 0%, 
+                rgba(160,124,91,0.04) 100%);
+            transition: all 0.3s ease;
+            z-index: -1;
+        }
+
+        .service-card:hover:before {
+            left: 0;
+        }
+
+        .service-card:hover {
+            transform: translateY(-15px);
+            border-color: rgba(0,0,0,0.15);
+            box-shadow: 
+                var(--shadow-dark),
+                0 0 40px rgba(160,124,91,0.15);
+        }
+
+        .service-icon {
+            font-size: 3.5rem;
+            margin-bottom: 2rem;
+            color: var(--gold);
+            text-shadow: var(--shadow-gold);
+        }
+
+        .service-card h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--white);
+            font-weight: 400;
+            letter-spacing: 1px;
+        }
+
+        .service-card p {
+            color: var(--text-white);
+            line-height: 1.7;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+
+        .service-actions { margin-top: 1.75rem; display: flex; justify-content: center; }
+        .service-price-btn {
+            padding: 0.8rem 1.2rem;
+            border-radius: 40px;
+            border: 1px solid rgba(0,0,0,0.15);
+            background: #ffffff;
+            color: var(--white);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .service-price-btn:hover { box-shadow: 0 10px 24px rgba(0,0,0,0.1); transform: translateY(-2px); }
+
+        /* PREMIUM ABOUT SECTION */
+        .about {
+            background: var(--black);
+            padding: 8rem 3rem;
+            border-top: 1px solid rgba(0,0,0,0.06);
+        }
+
+        .about-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6rem;
+            align-items: center;
+        }
+
+        .about-text h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            margin-bottom: 3rem;
+            color: var(--white);
+            font-weight: 300;
+            letter-spacing: 2px;
+            background: var(--gradient-gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .about-text p {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            color: var(--text-white);
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+
+        .about-text p strong {
+            color: var(--gold);
+            font-weight: 400;
+        }
+
+        .about-founder { margin-top: 2.5rem; }
+        .about-founder h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            font-weight: 400;
+            color: var(--gold);
+            margin-bottom: 1rem;
+            letter-spacing: 1px;
+        }
+
+        .about-image {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            height: 500px;
+            background: linear-gradient(135deg, var(--black), var(--dark));
+            border: 1px solid rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: var(--gold);
+            text-shadow: 0 0 20px rgba(160,124,91,0.35);
+        }
+
+        /* removed stats section styles */
+
+        /* PREMIUM PORTFOLIO SECTION */
+        .portfolio {
+            padding: 8rem 3rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--black);
+        }
+
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .portfolio-item {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            height: 320px;
+            background-size: cover;
+            background-position: center;
+            border: 1px solid rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .portfolio-item:nth-child(1) {
+            background-image: 
+                linear-gradient(rgba(0,0,0,0.15), rgba(0,0,0,0.35)),
+                url('public/IMAGE%202025-08-15%2013:04:24.jpg');
+        }
+
+        .portfolio-item:nth-child(2) {
+            background-image: 
+                linear-gradient(rgba(0,0,0,0.15), rgba(0,0,0,0.35)),
+                url('public/IMAGE%202025-08-15%2013:04:27.jpg');
+        }
+
+        .portfolio-item:nth-child(3) {
+            background-image: 
+                linear-gradient(rgba(0,0,0,0.15), rgba(0,0,0,0.35)),
+                url('public/IMAGE%202025-08-15%2013:04:29.jpg');
+        }
+
+        .portfolio-item:nth-child(4) {
+            background-image: 
+                linear-gradient(rgba(0,0,0,0.15), rgba(0,0,0,0.35)),
+                url('public/IMAGE%202025-08-15%2013:04:31.jpg');
+        }
+
+        .portfolio-item:nth-child(5) {
+            background-image: 
+                linear-gradient(rgba(0,0,0,0.15), rgba(0,0,0,0.35)),
+                url('public/IMAGE%202025-08-15%2013:04:33.jpg');
+        }
+
+        .portfolio-item:nth-child(6) {
+            background-image: 
+                linear-gradient(rgba(0,0,0,0.15), rgba(0,0,0,0.35)),
+                url('public/IMAGE%202025-08-15%2013:04:34.jpg');
+        }
+
+        .portfolio-item:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: rgba(0,0,0,0.15);
+            box-shadow: 
+                0 20px 40px rgba(0,0,0,0.3),
+                0 0 50px rgba(160,124,91,0.2);
+        }
+
+        .portfolio-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1.2rem;
+            background: linear-gradient(transparent, rgba(255,255,255,0.95));
+            color: var(--white);
+            transform: translateY(100%);
+            transition: all 0.3s ease;
+        }
+
+        .portfolio-item:hover .portfolio-overlay {
+            transform: translateY(0);
+        }
+
+        .portfolio-overlay h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.8rem;
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        /* PREMIUM TESTIMONIALS */
+        .testimonials {
+            background: var(--black);
+            padding: 8rem 3rem;
+            border-top: 1px solid rgba(0,0,0,0.06);
+        }
+
+        .testimonials-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .testimonial {
+            background: #ffffff;
+            padding: 4rem 3rem;
+            border-radius: 8px;
+            border: 1px solid rgba(0,0,0,0.08);
+            margin: 3rem 0;
+            backdrop-filter: blur(20px);
+            position: relative;
+        }
+
+        .testimonial::before {
+            content: '"';
+            position: absolute;
+            top: -10px;
+            left: 30px;
+            font-size: 6rem;
+            font-family: 'Cormorant Garamond', serif;
+            color: var(--gold);
+            opacity: 0.3;
+        }
+
+        .testimonial-text {
+            font-size: 1.1rem;
+            font-style: italic;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            color: var(--text-light);
+            font-weight: 300;
+        }
+
+        .testimonial-author {
+            font-weight: 400;
+            color: var(--gold);
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+
+        .testimonial-stars {
+            display: flex;
+            justify-content: center;
+            gap: 0.3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .testimonial-stars i {
+            color: var(--gold);
+            font-size: 1.2rem;
+            animation: starTwinkle 2s ease-in-out infinite;
+        }
+
+        .testimonial-stars i:nth-child(1) { animation-delay: 0s; }
+        .testimonial-stars i:nth-child(2) { animation-delay: 0.2s; }
+        .testimonial-stars i:nth-child(3) { animation-delay: 0.4s; }
+        .testimonial-stars i:nth-child(4) { animation-delay: 0.6s; }
+        .testimonial-stars i:nth-child(5) { animation-delay: 0.8s; }
+
+        @keyframes starTwinkle {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+
+        /* =============== FAQ СЕКЦИЯ =============== */
+        .faq {
+            padding: 8rem 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--black);
+        }
+
+        .faq-item {
+            background: #ffffff;
+            border: 1px solid rgba(0,0,0,0.08);
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .faq-item.active {
+            border-color: rgba(0,0,0,0.12);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+        }
+
+        .faq-question {
+            padding: 2rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+            color: var(--white);
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .faq-question:hover {
+            color: var(--gold);
+        }
+
+        .faq-icon {
+            color: var(--gold);
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .faq-item.active .faq-icon {
+            transform: rotate(45deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 200px;
+        }
+
+        .faq-answer-content {
+            padding: 0 2rem 2rem 2rem;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* PREMIUM CONTACT SECTION */
+        .contact {
+            padding: 8rem 3rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--black);
+        }
+
+        .contact-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6rem;
+        }
+
+        .contact-info h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: var(--gold);
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1rem 0;
+            gap: 1.5rem;
+        }
+
+        .contact-icon {
+            font-size: 1.5rem;
+            color: var(--gold);
+            min-width: 2rem;
+        }
+
+        .contact-item h4 {
+            color: var(--gold);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .contact-item p {
+            color: var(--text-light);
+            margin: 0;
+            font-weight: 300;
+        }
+
+        .contact-form {
+            background: #ffffff;
+            padding: 3rem;
+            border-radius: 8px;
+            border: 1px solid rgba(0,0,0,0.08);
+            backdrop-filter: blur(20px);
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.8rem;
+            font-weight: 400;
+            color: var(--gold);
+            letter-spacing: 1px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid rgba(0,0,0,0.12);
+            border-radius: 5px;
+            font-family: inherit;
+            background: #ffffff;
+            color: var(--white);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 20px rgba(212,175,55,0.3);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1.2rem;
+            background: linear-gradient(45deg, var(--gold), var(--gold-light));
+            color: #ffffff;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(212,175,55,0.4);
+        }
+
+        /* PREMIUM FOOTER */
+        .footer {
+            background: #FFFFFF;
+            padding: 3rem;
+            text-align: center;
+            border-top: 1px solid rgba(0,0,0,0.06);
+        }
+
+        .footer p {
+            font-weight: 300;
+            letter-spacing: 1px;
+            color: rgba(0,0,0,0.6);
+        }
+
+        /* =============== МОБИЛЬНОЕ МЕНЮ =============== */
+        .mobile-menu-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 0.5rem;
+            z-index: 1001;
+        }
+
+        .mobile-menu-toggle span {
+            width: 25px;
+            height: 3px;
+            background: var(--gold);
+            margin: 3px 0;
+            transition: 0.3s;
+            border-radius: 3px;
+        }
+
+        .mobile-menu-toggle.active span:nth-child(1) {
+            transform: rotate(-45deg) translate(-5px, 6px);
+        }
+
+        .mobile-menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .mobile-menu-toggle.active span:nth-child(3) {
+            transform: rotate(45deg) translate(-5px, -6px);
+        }
+
+        .mobile-nav {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 80%;
+            height: 100vh;
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(20px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: right 0.3s ease;
+            z-index: 1000;
+            border-left: 1px solid rgba(0,0,0,0.06);
+        }
+
+        .mobile-nav.active {
+            right: 0;
+        }
+
+        .mobile-nav a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 1.5rem;
+            margin: 1.5rem 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-nav a:hover {
+            color: var(--gold);
+            transform: scale(1.1);
+        }
+
+        /* =============== WHATSAPP ВИДЖЕТ =============== */
+        .whatsapp-widget {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: #25d366;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.3);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            animation: pulse 2s infinite;
+        }
+
+        .whatsapp-widget:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 35px rgba(37, 211, 102, 0.5);
+        }
+
+        .whatsapp-widget i {
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 8px 25px rgba(37, 211, 102, 0.3); }
+            50% { box-shadow: 0 8px 25px rgba(37, 211, 102, 0.6); }
+            100% { box-shadow: 0 8px 25px rgba(37, 211, 102, 0.3); }
+        }
+
+        /* =============== АДАПТИВНОСТЬ =============== */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .mobile-menu-toggle {
+                display: flex;
+            }
+
+            .cta-header {
+                display: none;
+            }
+
+            .nav-container {
+                padding: 0 1.5rem;
+            }
+
+            .logo-text {
+                font-size: 1.8rem;
+            }
+
+            .hero-title {
+                font-size: 3rem;
+            }
+
+            .hero-content {
+                padding: 1rem;
+            }
+
+            .about-content,
+            .contact-content {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .about-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .services-grid,
+            .portfolio-grid,
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .section {
+                padding: 60px 1.5rem;
+            }
+
+            .whatsapp-widget {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+            }
+
+            .whatsapp-widget i {
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero .subtitle {
+                font-size: 1.1rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .service-card {
+                padding: 1.5rem;
+            }
+
+            .contact-form {
+                padding: 1.5rem;
+            }
+
+            .faq {
+                padding: 60px 1.5rem;
+            }
+
+            .faq-question {
+                padding: 1.5rem;
+                font-size: 1rem;
+            }
+
+            .faq-answer-content {
+                padding: 0 1.5rem 1.5rem 1.5rem;
+            }
+        }
+
+        /* Scroll Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.3s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Hero Title Animation */
+        .hero h1 {
+            opacity: 0;
+            transform: translateY(50px);
+            animation: titleReveal 2s 0.5s ease-out forwards;
+        }
+
+        @keyframes titleReveal {
+            0% {
+                opacity: 0;
+                transform: translateY(50px) scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Add shimmer animation after title loads */
+        .hero h1.loaded {
+            animation: titleReveal 2s 0.5s ease-out forwards, goldShimmer 4s ease-in-out infinite 3s;
+        }
+
+        /* Interactive hover states */
+        .service-card:hover .service-icon {
+            transform: scale(1.2) rotate(15deg);
+            filter: drop-shadow(0 10px 20px rgba(212,175,55,0.4));
+        }
+
+        /* Анимации при наведении на карточки */
+        .service-card {
+            transition: all 0.3s ease;
+        }
+
+        .service-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            border-color: rgba(212,175,55,0.5);
+            box-shadow: 
+                0 25px 50px rgba(0,0,0,0.3),
+                0 0 40px rgba(212,175,55,0.2);
+        }
+
+
+
+
+
+        /* Testimonials slider */
+        .testimonials-slider {
+            position: relative;
+            overflow: hidden;
+            margin-top: 4rem;
+        }
+
+        .testimonials-track {
+            display: flex;
+            gap: 2rem;
+            transition: transform 0.4s ease;
+            will-change: transform;
+        }
+
+        .testimonial {
+            flex: 0 0 100%;
+        }
+
+        .slider-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #ffffff;
+            border: 1px solid rgba(0,0,0,0.1);
+            color: var(--white);
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .slider-btn:hover { box-shadow: 0 10px 24px rgba(0,0,0,0.15); }
+        .slider-btn.prev { left: 0.5rem; }
+        .slider-btn.next { right: 0.5rem; }
+
+        .slider-dots { display: flex; justify-content: center; gap: 8px; margin-top: 1.5rem; }
+        .slider-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(0,0,0,0.15); cursor: pointer; }
+        .slider-dot.active { background: var(--gold); }
+
+        @media (min-width: 768px) {
+            .testimonial { flex-basis: 100%; }
+        }
+
+
+    </style>
+</head>
+<body>
+    <!-- =============== ЭПИЧНАЯ ЗАГРУЗОЧНАЯ ЗАСТАВКА =============== -->
+    <div class="loader-container" id="loader">
+        <div class="loader-crown"></div>
+        <div class="loader-logo">Alë! Events</div>
+        <div class="loader-text">Wedding and Events</div>
+        <div class="loader-progress">
+            <div class="loader-bar"></div>
+        </div>
+        <div class="loader-percentage" id="percentage">0%</div>
+    </div>
+
+    <!-- =============== ПОПАП ЗАЯВКИ =============== -->
+    <div id="applicationModal" aria-hidden="true" style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:10002;">
+        <div class="modal-backdrop" style="position:absolute;inset:0;background:rgba(0,0,0,0.5);"></div>
+        <div class="modal-card" role="dialog" aria-modal="true" style="position:relative;background:#ffffff;border-radius:12px;max-width:560px;width:92%;padding:2rem;border:1px solid rgba(0,0,0,0.08);box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+            <button id="applicationClose" aria-label="Закрыть" style="position:absolute;top:12px;right:12px;background:#fff;border:1px solid rgba(0,0,0,0.1);width:36px;height:36px;border-radius:50%;cursor:pointer">✕</button>
+            <h3 style="font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--white);margin-bottom:1rem">Оставить заявку</h3>
+            <form class="contact-form modal-form">
+                <div class="form-group">
+                    <input type="text" placeholder="Ваше имя" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <input type="tel" placeholder="Телефон" required>
+                </div>
+                <div class="form-group">
+                    <textarea placeholder="Расскажите о ваших пожеланиях" rows="5"></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Отправить заявку</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- =============== ПОПАП УСЛУГ =============== -->
+    <div id="serviceModal" aria-hidden="true" style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:10002;">
+        <div class="modal-backdrop" style="position:absolute;inset:0;background:rgba(0,0,0,0.5);"></div>
+        <div class="modal-card" role="dialog" aria-modal="true" style="position:relative;background:#ffffff;border-radius:12px;max-width:760px;width:94%;padding:2rem;border:1px solid rgba(0,0,0,0.08);box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+            <button id="serviceClose" aria-label="Закрыть" style="position:absolute;top:12px;right:12px;background:#fff;border:1px solid rgba(0,0,0,0.1);width:36px;height:36px;border-radius:50%;cursor:pointer">✕</button>
+            <div id="serviceContent"></div>
+        </div>
+    </div>
+
+    <!-- =============== СКРОЛЛ ПРОГРЕСС БАР =============== -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <!-- =============== ОСНОВНОЙ КОНТЕНТ =============== -->
+    <div class="main-content" id="mainContent">
+        <!-- РОСКОШНЫЙ ХЕДЕР -->
+        <header class="header" id="header">
+            <div class="nav-container">
+                <a href="#" class="logo">
+                    <div class="logo-crown"></div>
+                    <div class="logo-text">Alë! Events</div>
+                </a>
+                <nav class="nav-menu">
+                    <a href="#home">Главная</a>
+                    <a href="#about">О нас</a>
+                    <a href="#services">Услуги</a>
+                    <a href="#portfolio">Портфолио</a>
+                    <a href="#testimonials">Отзывы</a>
+                    <a href="#faq">FAQ</a>
+                    <a href="#contact">Контакты</a>
+                </nav>
+                <a href="#" class="cta-header js-open-application">Оставить заявку</a>
+                
+                <!-- Мобильное меню -->
+                <div class="mobile-menu-toggle" id="mobileMenuToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Мобильная навигация -->
+        <nav class="mobile-nav" id="mobileNav">
+            <a href="#home">Главная</a>
+            <a href="#about">О нас</a>
+            <a href="#services">Услуги</a>
+            <a href="#portfolio">Портфолио</a>
+            <a href="#testimonials">Отзывы</a>
+            <a href="#faq">FAQ</a>
+            <a href="#contact">Контакты</a>
+            <a href="#" class="js-open-application" style="background: linear-gradient(45deg, var(--gold), var(--gold-light)); padding: 1rem 2rem; border-radius: 50px; color: var(--black); margin-top: 2rem;">Оставить заявку</a>
+        </nav>
+
+        <!-- HERO СЕКЦИЯ -->
+        <section class="hero" id="home">
+            <div class="hero-content">
+                <div class="hero-crown"></div>
+                <h1 class="hero-title">ALË! EVENTS</h1>
+                <p class="hero-subtitle">WEDDING AND EVENTS</p>
+                <p class="hero-description">Организация мероприятий полного цикла</p>
+                <a href="#" class="hero-cta js-open-application">Начать планирование</a>
+            </div>
+        </section>
+
+        <!-- О НАС -->
+        <section class="about section" id="about">
+            <h2 class="section-title">О нашем агентстве</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>Мы — команда вдохновенных создателей моментов, которые остаются в памяти навсегда. Наше агентство — это не просто организация свадеб и мероприятий, а искусство превращать мечты в реальность.</p>
+                    <p>Мы создаём не просто красивые свадьбы — мы наполняем эмоциями любые события.</p>
+                    <p>Стильные дни рождения и трогательные юбилеи, волшебные детские праздники и эффектные корпоративы — каждое мероприятие мы продумываем до мелочей, чтобы оно стало именно вашим: элегантным, атмосферным и по-настоящему запоминающимся.</p>
+                    <p>Главное для нас — не просто декор и организация, а ваши эмоции. Поэтому мы вкладываем в каждое событие душу, чувство стиля и внимание к деталям. Хотите праздник, от которого гости скажут «Вау!»? Тогда вы по адресу!</p>
+
+                    <div class="about-founder">
+                        <h3>Алёна Кузьмина, руководитель агентства</h3>
+                        <p>Меня зовут Алёна, и я дарю людям праздник — с душой, движением и безупречным стилем.</p>
+                        <p>Еще в детстве мама научила меня главному: даже обычный день можно превратить в маленькое чудо. С тех пор праздник для меня — не просто событие, а живая история, где каждая деталь важна. А хореографическое образование добавило чувства ритма, гармонии и умения видеть красоту в каждой мелочи.</p>
+                        <p>Сегодня я руковожу агентством ALЁ! Events, где вместе с командой таких же увлеченных профессионалов создаем по-настоящему волшебные события. Мы не просто исполняем мечты — мы вдыхаем в них жизнь, сочетая ваш уникальный стиль с нашим безупречным вкусом и многолетним опытом.</p>
+                        <p>Мы не просто организуем мероприятия — мы создаём живые эмоции, которые остаются с вами навсегда. Давайте сделаем ваш день по-настоящему уникальным!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- УСЛУГИ -->
+        <section class="services section" id="services">
+            <h2 class="section-title">Наши услуги</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon"><i class="fas fa-crown"></i></div>
+                    <h3>Организация свадьбы под ключ</h3>
+                    <p>Полный цикл подготовки: концепция, подрядчики, смета, координация и контроль материалов.</p>
+                    <div class="service-actions"><button class="service-price-btn" data-service="wedding-full">Посмотреть стоимость</button></div>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon"><i class="fas fa-clipboard-list"></i></div>
+                    <h3>Координация вашей свадьбы</h3>
+                    <p>Подготовка и контроль в день свадьбы: тайминг, коммуникация и управление процессами.</p>
+                    <div class="service-actions"><button class="service-price-btn" data-service="wedding-coordination">Посмотреть стоимость</button></div>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon"><i class="fas fa-map-marker-alt"></i></div>
+                    <h3>Подбор площадки или специалиста</h3>
+                    <p>Индивидуальная подборка локаций и проверенных подрядчиков с рекомендациями.</p>
+                    <div class="service-actions"><button class="service-price-btn" data-service="venue-or-vendor">Посмотреть стоимость</button></div>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon"><i class="fas fa-heart"></i></div>
+                    <h3>Организация предложения руки и сердца</h3>
+                    <p>Идея, сценарий, подрядчики, тайминг, смета и координация — особенный момент под ключ.</p>
+                    <div class="service-actions"><button class="service-price-btn" data-service="proposal">Посмотреть стоимость</button></div>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon"><i class="fas fa-baby"></i></div>
+                    <h3>Организация гендер-пати</h3>
+                    <p>Сценарий, подрядчики, тайминг, смета и координация — тёплый семейный праздник.</p>
+                    <div class="service-actions"><button class="service-price-btn" data-service="gender-party">Посмотреть стоимость</button></div>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon"><i class="fas fa-birthday-cake"></i></div>
+                    <h3>День рождения/юбилей под ключ</h3>
+                    <p>Концепция, подрядчики, смета, координация и контроль материалов — от идеи до эмоций.</p>
+                    <div class="service-actions"><button class="service-price-btn" data-service="birthday">Посмотреть стоимость</button></div>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon"><i class="fas fa-child"></i></div>
+                    <h3>Детские праздники под ключ</h3>
+                    <p>Программа, локация, подрядчики, смета и координация — безопасно и по-настоящему весело.</p>
+                    <div class="service-actions"><button class="service-price-btn" data-service="kids-party">Посмотреть стоимость</button></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ПОРТФОЛИО -->
+        <section class="portfolio section" id="portfolio">
+            <h2 class="section-title">Наши работы</h2>
+            <div class="portfolio-grid">
+                <div class="portfolio-item">
+                    <div class="portfolio-overlay">
+                        <h3>Классическая роскошь</h3>
+                        <p>Элегантная свадьба в историческом особняке</p>
+                    </div>
+                </div>
+                <div class="portfolio-item">
+                    <div class="portfolio-overlay">
+                        <h3>Современный стиль</h3>
+                        <p>Минималистичная церемония в лофте</p>
+                    </div>
+                </div>
+                <div class="portfolio-item">
+                    <div class="portfolio-overlay">
+                        <h3>Загородная романтика</h3>
+                        <p>Свадьба на природе в стиле прованс</p>
+                    </div>
+                </div>
+                <div class="portfolio-item">
+                    <div class="portfolio-overlay">
+                        <h3>Винтажный шик</h3>
+                        <p>Ретро стиль с антикварными деталями</p>
+                    </div>
+                </div>
+                <div class="portfolio-item">
+                    <div class="portfolio-overlay">
+                        <h3>Богемная роскошь</h3>
+                        <p>Свадьба в стиле бохо-шик</p>
+                    </div>
+                </div>
+                <div class="portfolio-item">
+                    <div class="portfolio-overlay">
+                        <h3>Гламурная роскошь</h3>
+                        <p>Золотая свадьба в grand отеле</p>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align:center;margin-top:2rem">
+                <a href="https://t.me/alyo_events" target="_blank" rel="noopener" class="hero-cta" style="padding:1rem 2rem;border-radius:40px;">Смотреть все в Telegram</a>
+            </div>
+        </section>
+
+        <!-- ОТЗЫВЫ -->
+        <section class="testimonials section" id="testimonials">
+            <h2 class="section-title">Отзывы клиентов</h2>
+            <div class="testimonials-slider" id="testimonialsSlider">
+                <button class="slider-btn prev" aria-label="Предыдущий отзыв" id="tPrev">❮</button>
+                <div class="testimonials-track" id="testimonialsTrack">
+                <div class="testimonial">
+                    <div class="testimonial-stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">Команда Alë! Events создала для нас настоящую сказку! Каждый момент был продуман до совершенства.</p>
+                    <div class="testimonial-author">— Анна и Дмитрий</div>
+                </div>
+                <div class="testimonial">
+                    <div class="testimonial-stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">Невероятный профессионализм и креативные решения. Это была свадьба мечты!</p>
+                    <div class="testimonial-author">— Мария и Александр</div>
+                </div>
+                <div class="testimonial">
+                    <div class="testimonial-stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">Взяли на себя все заботы и превратили наш день в настоящее произведение искусства.</p>
+                    <div class="testimonial-author">— Елена и Сергей</div>
+                </div>
+                </div>
+                <button class="slider-btn next" aria-label="Следующий отзыв" id="tNext">❯</button>
+                <div class="slider-dots" id="tDots"></div>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section class="faq section" id="faq">
+            <h2 class="section-title">Частые вопросы</h2>
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Как начать работать с вами?</span>
+                        <i class="fas fa-plus faq-icon"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            Оставьте заявку на сайте или напишите мне в любой мессенджер. Мы свяжемся, уточним детали и пригласим на встречу. За чашечкой чая или кофе обсудим ваш праздник и рассчитаем смету. Возможна онлайн-встреча. После этого направим коммерческое предложение и после согласования приступим к подготовке.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Сколько будет координаторов и организаторов на мероприятии?</span>
+                        <i class="fas fa-plus faq-icon"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            С вами работает организатор — руководитель Алёна, которая лично ведёт подготовку. В день события на площадке обязательно присутствует Алёна и минимум 1–2 координатора. Точное количество зависит от программы и объёма задач.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>За какое время лучше начинать подготовку?</span>
+                        <i class="fas fa-plus faq-icon"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            Для свадьбы оптимально начать подготовку за 4–6 месяцев. При масштабных проектах — за год. Для других праздников — минимум за 2–3 недели. Мы поможем организовать и в более короткие сроки.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Чем отличается свадьба в будний день?</span>
+                        <i class="fas fa-plus faq-icon"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            Будние даты помогают сэкономить: ниже депозит и аренда площадок, у подрядчиков часто есть скидки. Гости успевают спланировать выходной заранее — пригласительные отправляем за 2–3 месяца.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Могу ли я предложить своих подрядчиков?</span>
+                        <i class="fas fa-plus faq-icon"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            Мы отвечаем за рекомендованных нами специалистов. С уже забронированными подрядчиками взаимодействуем и помогаем в работе, однако ответственность за их действия мы не несём. Если понравился новый специалист — пришлите ссылку, мы изучим и предложим формат взаимодействия. Не тратьте время на самостоятельные поиски — мы соберём лучшие варианты под ваш бюджет.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Почему выбрать именно ваше агентство?</span>
+                        <i class="fas fa-plus faq-icon"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            Мы — команда профессионалов: организатор, координаторы, режиссёр, сценарист, технические специалисты и другие. Для нас важнее качество каждого события, чем количество. Мы постоянно улучшаем сервис, чтобы подготовка была понятной и спокойной, а праздник — комфортным и продуманным для вас и гостей.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- КОНТАКТЫ -->
+        <section class="contact section" id="contact">
+            <h2 class="section-title">Свяжитесь с нами</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <div class="contact-icon"><i class="fas fa-phone"></i></div>
+                        <div>
+                            <h4>Телефон</h4>
+                            <p><a href="tel:+79223302928" style="color:inherit;text-decoration:none">8 (922) 330-29-28</a></p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+                        <div>
+                            <h4>Email</h4>
+                            <p><a href="mailto:ale-event@yandex.ru" style="color:inherit;text-decoration:none">ale-event@yandex.ru</a></p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon"><i class="fab fa-telegram-plane"></i></div>
+                        <div>
+                            <h4>Telegram</h4>
+                            <p><a href="https://t.me/al_dmtr" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">@al_dmtr</a></p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon"><i class="fab fa-whatsapp"></i></div>
+                        <div>
+                            <h4>WhatsApp</h4>
+                            <p><a href="https://wa.me/79223302928" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">Написать в WhatsApp</a></p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
+                        <div>
+                            <h4>Адрес</h4>
+                            <p>Москва, ул. Тверская, 15</p>
+                        </div>
+                    </div>
+                </div>
+                <form class="contact-form">
+                    <div class="form-group">
+                        <input type="text" placeholder="Ваше имя" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" placeholder="Email" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="tel" placeholder="Телефон" required>
+                    </div>
+                    <div class="form-group">
+                        <textarea placeholder="Расскажите о ваших пожеланиях" rows="5"></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">Отправить заявку</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- ФУТЕР -->
+        <footer class="footer">
+            <p>&copy; 2024 Alë! Events. Все права защищены.</p>
+        </footer>
+    </div>
+
+    <!-- =============== WHATSAPP ВИДЖЕТ =============== -->
+    <div class="whatsapp-widget" onclick="window.open('https://wa.me/79223302928?text=Здравствуйте! Хочу узнать о ваших услугах', '_blank')">
+        <i class="fab fa-whatsapp"></i>
+    </div>
+
+    <script>
+        // =============== ЭПИЧНАЯ ЗАГРУЗОЧНАЯ ЗАСТАВКА ===============
+        window.addEventListener('load', function() {
+            const loader = document.getElementById('loader');
+            const mainContent = document.getElementById('mainContent');
+            const percentage = document.getElementById('percentage');
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 100) progress = 100;
+                
+                percentage.textContent = Math.floor(progress) + '%';
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    percentage.textContent = '100%';
+                    
+                    setTimeout(() => {
+                        loader.classList.add('hidden');
+                        mainContent.classList.add('loaded');
+                    }, 500);
+                }
+            }, 100);
+        });
+
+        // =============== СКРОЛЛ ЭФФЕКТЫ ===============
+        window.addEventListener('scroll', function() {
+            const header = document.getElementById('header');
+            if (window.scrollY > 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // =============== ПЛАВНАЯ ПРОКРУТКА ===============
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // =============== ФОРМА ===============
+        document.querySelector('.contact-form')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const submitBtn = this.querySelector('.submit-btn');
+            const originalText = submitBtn.textContent;
+            
+            submitBtn.textContent = 'Отправляем... ✨';
+            submitBtn.style.background = 'linear-gradient(45deg, #4CAF50, #45a049)';
+            
+            setTimeout(() => {
+                submitBtn.textContent = 'Отправлено! ✅';
+                setTimeout(() => {
+                    submitBtn.textContent = originalText;
+                    submitBtn.style.background = '';
+                    this.reset();
+                }, 2000);
+            }, 1500);
+        });
+
+        // Повторное поведение для формы в модалке
+        document.querySelector('.modal-form')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const submitBtn = this.querySelector('.submit-btn');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Отправляем... ✨';
+            submitBtn.style.background = 'linear-gradient(45deg, #4CAF50, #45a049)';
+            setTimeout(() => {
+                submitBtn.textContent = 'Отправлено! ✅';
+                setTimeout(() => {
+                    submitBtn.textContent = originalText;
+                    submitBtn.style.background = '';
+                    this.reset();
+                    closeModal();
+                }, 1500);
+            }, 1200);
+        });
+
+        // =============== АНИМАЦИИ ПРИ СКРОЛЛЕ ===============
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    
+                    // Stagger effect для карточек
+                    if (entry.target.classList.contains('service-card') || 
+                        entry.target.classList.contains('portfolio-item') ||
+                        entry.target.classList.contains('testimonial')) {
+                        const delay = Array.from(entry.target.parentNode.children).indexOf(entry.target) * 200;
+                        setTimeout(() => {
+                            entry.target.style.transform = 'translateY(0)';
+                            entry.target.style.opacity = '1';
+                        }, delay);
+                    }
+                }
+            });
+        }, observerOptions);
+
+        // Добавляем анимации ко всем карточкам и заголовкам
+        document.querySelectorAll('.service-card, .portfolio-item, .testimonial, .section-title, .faq-item').forEach(el => {
+            el.classList.add('fade-in');
+            observer.observe(el);
+        });
+
+        // =============== МОБИЛЬНОЕ МЕНЮ ===============
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const mobileNav = document.getElementById('mobileNav');
+
+        mobileMenuToggle.addEventListener('click', function() {
+            this.classList.toggle('active');
+            mobileNav.classList.toggle('active');
+        });
+
+        // Закрываем меню при клике на ссылку
+        document.querySelectorAll('.mobile-nav a').forEach(link => {
+            link.addEventListener('click', function() {
+                mobileMenuToggle.classList.remove('active');
+                mobileNav.classList.remove('active');
+            });
+        });
+
+        // Закрываем меню при клике вне его
+        document.addEventListener('click', function(e) {
+            if (!mobileNav.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
+                mobileMenuToggle.classList.remove('active');
+                mobileNav.classList.remove('active');
+            }
+        });
+
+        // =============== МОДАЛКА ЗАЯВКИ ===============
+        const modal = document.getElementById('applicationModal');
+        const openBtns = document.querySelectorAll('.js-open-application');
+        const closeBtn = document.getElementById('applicationClose');
+        const backdrop = modal.querySelector('.modal-backdrop');
+
+        function openModal(){ modal.style.display = 'flex'; modal.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden'; }
+        function closeModal(){ modal.style.display = 'none'; modal.setAttribute('aria-hidden','true'); document.body.style.overflow=''; }
+        window.closeModal = closeModal;
+
+        openBtns.forEach(b => b.addEventListener('click', (e)=>{ e.preventDefault(); openModal(); }));
+        closeBtn.addEventListener('click', closeModal);
+        backdrop.addEventListener('click', closeModal);
+
+        // =============== СКРОЛЛ ПРОГРЕСС БАР ===============
+        window.addEventListener('scroll', function() {
+            const scrollProgress = document.getElementById('scrollProgress');
+            const scrollTop = window.pageYOffset;
+            const docHeight = document.body.scrollHeight - window.innerHeight;
+            const scrollPercent = (scrollTop / docHeight) * 100;
+            scrollProgress.style.width = scrollPercent + '%';
+        });
+
+        // =============== АНИМИРОВАННЫЕ СЧЕТЧИКИ ===============
+        // removed stat counters
+
+        // =============== СЛАЙДЕР ОТЗЫВОВ ===============
+        (function initTestimonialsSlider(){
+            const track = document.getElementById('testimonialsTrack');
+            const prev = document.getElementById('tPrev');
+            const next = document.getElementById('tNext');
+            const dotsWrap = document.getElementById('tDots');
+            if (!track || !prev || !next || !dotsWrap) return;
+
+            const slides = Array.from(track.children);
+            let index = 0;
+
+            function update() {
+                track.style.transform = `translateX(-${index * 100}%)`;
+                dotsWrap.querySelectorAll('.slider-dot').forEach((d,i)=>{
+                    d.classList.toggle('active', i===index);
+                });
+            }
+
+            // Dots
+            slides.forEach((_, i) => {
+                const dot = document.createElement('button');
+                dot.className = 'slider-dot' + (i===0 ? ' active' : '');
+                dot.setAttribute('aria-label', `Показать отзыв ${i+1}`);
+                dot.addEventListener('click', () => { index = i; update(); });
+                dotsWrap.appendChild(dot);
+            });
+
+            // Controls
+            prev.addEventListener('click', () => {
+                index = (index - 1 + slides.length) % slides.length;
+                update();
+            });
+            next.addEventListener('click', () => {
+                index = (index + 1) % slides.length;
+                update();
+            });
+
+            // Swipe
+            let startX = 0;
+            track.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, {passive:true});
+            track.addEventListener('touchend', e => {
+                const endX = e.changedTouches[0].clientX;
+                const dx = endX - startX;
+                if (Math.abs(dx) > 50) {
+                    if (dx < 0) { index = (index + 1) % slides.length; } else { index = (index - 1 + slides.length) % slides.length; }
+                    update();
+                }
+            });
+        })();
+
+        // =============== МОДАЛКА УСЛУГ ===============
+        const serviceModal = document.getElementById('serviceModal');
+        const serviceBackdrop = serviceModal.querySelector('.modal-backdrop');
+        const serviceClose = document.getElementById('serviceClose');
+        const serviceContent = document.getElementById('serviceContent');
+
+        const serviceDetails = {
+            'wedding-full': `
+                <h3 style="font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--white);margin-bottom:1rem">Организация свадьбы под ключ</h3>
+                <ul style="margin-left:1.2rem;line-height:1.7;color:var(--text-light)">
+                    <li>Разработка концепции будущей свадьбы</li>
+                    <li>Выбор места проведения свадьбы</li>
+                    <li>Подбор всех подрядчиков и доп. услуг</li>
+                    <li>Составление сметы и других документов</li>
+                    <li>Коммуникация с подрядчиками и всеми специалистами</li>
+                    <li>Помощь и подробная консультация на любых этапах подготовки</li>
+                    <li>Координация в день свадьбы</li>
+                    <li>Контроль за получением фотографий и видео</li>
+                </ul>
+                <p style="margin-top:1rem;color:var(--white)"><strong>СТОИМОСТЬ:</strong> 10% от сметы мероприятия, но не менее 100 000 р.<br/><em style="color:var(--text-soft)">Камерные свадьбы и свадьбы для двоих обсуждаются индивидуально</em></p>
+            `,
+            'wedding-coordination': `
+                <h3 style="font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--white);margin-bottom:1rem">Координация вашей свадьбы</h3>
+                <ul style="margin-left:1.2rem;line-height:1.7;color:var(--text-light)">
+                    <li>Первая встреча — знакомство и корректировка плана</li>
+                    <li>Подготовка перед свадьбой — ТЗ, тайминги, документы</li>
+                    <li>В день свадьбы — полная координация на площадке</li>
+                </ul>
+                <p style="margin-top:1rem;color:var(--white)"><strong>СТОИМОСТЬ:</strong> от 30 000 р.</p>
+            `,
+            'venue-or-vendor': `
+                <h3 style="font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--white);margin-bottom:1rem">Подбор площадки или отдельного специалиста</h3>
+                <p style="line-height:1.7;color:var(--text-light)">Индивидуальная подборка лучших локаций и проверенных подрядчиков — с полной информацией, сравнением вариантов и нашими экспертными рекомендациями.</p>
+                <p style="margin-top:1rem;color:var(--white)"><strong>СТОИМОСТЬ:</strong> от 10 000 р.</p>
+            `,
+            'proposal': `
+                <h3 style="font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--white);margin-bottom:1rem">Организация предложения руки и сердца</h3>
+                <ul style="margin-left:1.2rem;line-height:1.7;color:var(--text-light)">
+                    <li>Разработка идеи и сценария</li>
+                    <li>Подбор подрядчиков и услуг</li>
+                    <li>Составление тайминга</li>
+                    <li>Составление и ведение сметы</li>
+                    <li>Координация в день мероприятия всех подрядчиков</li>
+                    <li>Контроль за получением фотографий и видео</li>
+                </ul>
+                <p style="margin-top:1rem;color:var(--white)"><strong>СТОИМОСТЬ:</strong> от 20 000 р.</p>
+            `,
+            'gender-party': `
+                <h3 style="font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--white);margin-bottom:1rem">Организация гендер-пати</h3>
+                <ul style="margin-left:1.2rem;line-height:1.7;color:var(--text-light)">
+                    <li>Разработка идеи и сценария</li>
+                    <li>Подбор подрядчиков и услуг</li>
+                    <li>Составление тайминга</li>
+                    <li>Составление и ведение сметы</li>
+                    <li>Координация в день мероприятия всех подрядчиков</li>
+                    <li>Контроль за получением фотографий и видео</li>
+                </ul>
+                <p style="margin-top:1rem;color:var(--white)"><strong>СТОИМОСТЬ:</strong> от 20 000 р.</p>
+            `,
+            'birthday': `
+                <h3 style="font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--white);margin-bottom:1rem">Организация дня рождения/юбилея под ключ</h3>
+                <ul style="margin-left:1.2rem;line-height:1.7;color:var(--text-light)">
+                    <li>Разработка концепции</li>
+                    <li>Выбор места проведения</li>
+                    <li>Подбор всех подрядчиков и доп. услуг</li>
+                    <li>Составление сметы и других документов</li>
+                    <li>Коммуникация с подрядчиками и всеми специалистами</li>
+                    <li>Помощь и консультация на любых этапах</li>
+                    <li>Координация в день мероприятия</li>
+                    <li>Контроль за получением фотографий и видео</li>
+                </ul>
+                <p style="margin-top:1rem;color:var(--white)"><strong>СТОИМОСТЬ:</strong> 10% от сметы мероприятия, но не менее 100 000 р.</p>
+            `,
+            'kids-party': `
+                <h3 style="font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--white);margin-bottom:1rem">Организация детских праздников под ключ</h3>
+                <ul style="margin-left:1.2rem;line-height:1.7;color:var(--text-light)">
+                    <li>Разработка программы</li>
+                    <li>Выбор места проведения (при необходимости)</li>
+                    <li>Подбор дополнительных подрядчиков и услуг</li>
+                    <li>Составление сметы и других документов</li>
+                    <li>Помощь и консультация на любых этапах</li>
+                    <li>Координация в день мероприятия</li>
+                    <li>Контроль за получением фотографий и видео</li>
+                </ul>
+                <p style="margin-top:1rem;color:var(--white)"><strong>СТОИМОСТЬ:</strong> 10% от сметы мероприятия</p>
+            `
+        };
+
+        function openServiceModal(key){
+            const html = serviceDetails[key];
+            if (!html) return;
+            serviceContent.innerHTML = html + `<div style="margin-top:1.25rem;display:flex;gap:.5rem;flex-wrap:wrap"><a href="#" class="hero-cta js-open-application" style="padding:.9rem 1.4rem">Оставить заявку</a></div>`;
+            serviceModal.style.display = 'flex';
+            serviceModal.setAttribute('aria-hidden','false');
+            document.body.style.overflow='hidden';
+        }
+        function closeServiceModal(){ serviceModal.style.display = 'none'; serviceModal.setAttribute('aria-hidden','true'); document.body.style.overflow=''; }
+
+        document.querySelectorAll('.service-price-btn').forEach(btn=>{
+            btn.addEventListener('click', ()=> openServiceModal(btn.getAttribute('data-service')));
+        });
+        serviceBackdrop.addEventListener('click', closeServiceModal);
+        serviceClose.addEventListener('click', closeServiceModal);
+
+        // =============== FAQ АККОРДЕОН ===============
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', function() {
+                const faqItem = this.parentNode;
+                const isActive = faqItem.classList.contains('active');
+                
+                // Закрываем все другие вопросы
+                document.querySelectorAll('.faq-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // Открываем текущий, если он не был активен
+                if (!isActive) {
+                    faqItem.classList.add('active');
+                }
+            });
+        });
+
+
+    </script>
+</body>
+</html>
