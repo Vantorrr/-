@@ -77,19 +77,15 @@
             transform: scale(1.1);
         }
 
-        .loader-logo {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 5rem;
-            font-weight: 700;
-            color: var(--gold);
-            margin-bottom: 3rem;
-            text-align: center;
-            letter-spacing: 4px;
+        .loader-logo { display: none; }
+
+        .loader-logo-img {
+            width: min(360px, 70vw);
+            height: auto;
+            margin-bottom: 2rem;
             opacity: 0;
-            animation: logoReveal 2s ease-out forwards;
-            text-shadow: 
-                0 0 50px rgba(160,124,91,0.6),
-                0 8px 16px rgba(0,0,0,0.9);
+            animation: logoReveal 1.2s ease-out forwards;
+            filter: drop-shadow(0 8px 16px rgba(0,0,0,0.25));
         }
 
         /* removed loader crown */
@@ -1318,7 +1314,7 @@
 <body>
     <!-- =============== ЭПИЧНАЯ ЗАГРУЗОЧНАЯ ЗАСТАВКА =============== -->
     <div class="loader-container" id="loader">
-        <div class="loader-logo">Alë! Events</div>
+        <img src="public/logo.png" alt="Alë! Events" class="loader-logo-img" />
         <div class="loader-text">Wedding and Events</div>
         <div class="loader-progress">
             <div class="loader-bar"></div>
