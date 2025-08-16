@@ -929,6 +929,27 @@
             font-weight: 300;
         }
 
+        .contact-messengers {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.5rem 0;
+            margin-top: 0.5rem;
+        }
+        .messenger-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: #ffffff;
+            border: 1px solid rgba(0,0,0,0.1);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+            color: var(--gold);
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+        .messenger-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(0,0,0,0.12); }
+
         .contact-form {
             background: #ffffff;
             padding: 3rem;
@@ -1613,7 +1634,7 @@
                         <div class="contact-icon"><i class="fas fa-phone"></i></div>
                         <div>
                             <h4>Телефон</h4>
-                            <p><a href="tel:+79223302928" style="color:inherit;text-decoration:none">8 (922) 330-29-28</a></p>
+                            <p><a href="tel:+79992779279" style="color:inherit;text-decoration:none">8 (999) 277-92-79</a></p>
                         </div>
                     </div>
                     <div class="contact-item">
@@ -1623,26 +1644,9 @@
                             <p><a href="mailto:ale-event@yandex.ru" style="color:inherit;text-decoration:none">ale-event@yandex.ru</a></p>
                         </div>
                     </div>
-                    <div class="contact-item">
-                        <div class="contact-icon"><i class="fab fa-telegram-plane"></i></div>
-                        <div>
-                            <h4>Telegram</h4>
-                            <p><a href="https://t.me/al_dmtr" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">@al_dmtr</a></p>
-                        </div>
-                    </div>
-                    <div class="contact-item">
-                        <div class="contact-icon"><i class="fab fa-whatsapp"></i></div>
-                        <div>
-                            <h4>WhatsApp</h4>
-                            <p><a href="https://wa.me/79223302928" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">Написать в WhatsApp</a></p>
-                        </div>
-                    </div>
-                    <div class="contact-item">
-                        <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
-                        <div>
-                            <h4>Адрес</h4>
-                            <p>Москва, ул. Тверская, 15</p>
-                        </div>
+                    <div class="contact-messengers">
+                        <a class="messenger-btn" href="https://t.me/al_dmtr" target="_blank" aria-label="Telegram" rel="noopener"><i class="fab fa-telegram-plane"></i></a>
+                        <a class="messenger-btn" href="https://wa.me/79992779279" target="_blank" aria-label="WhatsApp" rel="noopener"><i class="fab fa-whatsapp"></i></a>
                     </div>
                 </div>
                 <form class="contact-form">
@@ -1670,7 +1674,7 @@
     </div>
 
     <!-- =============== WHATSAPP ВИДЖЕТ =============== -->
-    <div class="whatsapp-widget" onclick="window.open('https://wa.me/79223302928?text=Здравствуйте! Хочу узнать о ваших услугах', '_blank')">
+    <div class="whatsapp-widget" onclick="window.open('https://wa.me/79992779279?text=Здравствуйте! Хочу узнать о ваших услугах', '_blank')">
         <i class="fab fa-whatsapp"></i>
     </div>
 
