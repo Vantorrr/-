@@ -256,8 +256,9 @@
         .nav-menu a {
             color: var(--text-light);
             text-decoration: none;
-            font-weight: 400;
-            font-size: 1rem;
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 500;
+            font-size: 1.05rem;
             letter-spacing: 1px;
             text-transform: uppercase;
             position: relative;
@@ -341,29 +342,19 @@
             padding: 2rem;
         }
 
-        .hero-crown {
-            font-size: 5rem;
-            color: var(--gold);
-            margin-bottom: 2rem;
-            text-shadow: 0 0 30px rgba(212,175,55,0.6);
-            animation: heroFloat 6s ease-in-out infinite;
-            font-family: serif;
-        }
-        
-        .hero-crown::before {
-            content: "♔";
-        }
+        /* removed hero crown */
 
         .hero-title {
             font-family: 'Cormorant Garamond', serif;
             font-size: clamp(3rem, 8vw, 7rem);
             font-weight: 700;
             margin-bottom: 1rem;
-            color: var(--white);
-            text-shadow: 
-                0 0 30px rgba(160,124,91,0.35),
-                0 4px 8px rgba(0,0,0,0.7);
-            letter-spacing: 3px;
+            background: linear-gradient(45deg, var(--gold), var(--gold-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            text-shadow: none;
         }
 
         .hero-subtitle {
@@ -1402,7 +1393,7 @@
         <!-- HERO СЕКЦИЯ -->
         <section class="hero" id="home">
             <div class="hero-content">
-                <div class="hero-crown"></div>
+                
                 <h1 class="hero-title">ALË! EVENTS</h1>
                 <p class="hero-subtitle">WEDDING AND EVENTS</p>
                 <p class="hero-description">Организация мероприятий полного цикла</p>
@@ -1426,7 +1417,7 @@
                         <p>Еще в детстве мама научила меня главному: даже обычный день можно превратить в маленькое чудо. С тех пор праздник для меня — не просто событие, а живая история, где каждая деталь важна. А хореографическое образование добавило чувства ритма, гармонии и умения видеть красоту в каждой мелочи.</p>
                         <p>Сегодня я руковожу агентством ALЁ! Events, где вместе с командой таких же увлеченных профессионалов создаем по-настоящему волшебные события. Мы не просто исполняем мечты — мы вдыхаем в них жизнь, сочетая ваш уникальный стиль с нашим безупречным вкусом и многолетним опытом.</p>
                         <p>Мы не просто организуем мероприятия — мы создаём живые эмоции, которые остаются с вами навсегда. Давайте сделаем ваш день по-настоящему уникальным!</p>
-                    </div>
+                </div>
                 </div>
             </div>
         </section>
@@ -1496,7 +1487,7 @@
                 <div class="portfolio-item"></div>
                 <div class="portfolio-item"></div>
                 <div class="portfolio-item"></div>
-            </div>
+                    </div>
             <div style="text-align:center;margin-top:2rem">
                 <a href="https://t.me/alyo_events" target="_blank" rel="noopener" class="hero-cta" style="padding:1rem 2rem;border-radius:40px;">Смотреть все в Telegram</a>
             </div>
