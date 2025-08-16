@@ -1264,13 +1264,14 @@
 
         .testimonials-track {
             display: flex;
-            gap: 2rem;
+            gap: 0;
             transition: transform 0.4s ease;
             will-change: transform;
         }
 
         .testimonial {
             flex: 0 0 100%;
+            min-width: 100%;
         }
 
         .slider-btn {
@@ -1855,7 +1856,7 @@
             let index = 0;
 
             function update() {
-                track.style.transform = `translateX(-${index * 100}%)`;
+                track.style.transform = 'translateX(' + (-index * 100) + '%)';
                 dotsWrap.querySelectorAll('.slider-dot').forEach((d,i)=>{
                     d.classList.toggle('active', i===index);
                 });
