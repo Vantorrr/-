@@ -47,6 +47,8 @@ def _ensure_listing_columns() -> None:
             statements.append("ALTER TABLE listings ADD COLUMN in_crm BOOLEAN NOT NULL DEFAULT 0")
         else:
             statements.append("ALTER TABLE listings ADD COLUMN in_crm BOOLEAN NOT NULL DEFAULT FALSE")
+    if "crm_due_on" not in present:
+        statements.append("ALTER TABLE listings ADD COLUMN crm_due_on DATE")
     if not statements:
         return
     with engine.begin() as connection:

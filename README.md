@@ -53,7 +53,8 @@ python -m app.cli run
 | `LLM_BASE_URL` | Адрес OpenAI-совместимого API. Пустой адрес оставляет шаблон |
 | `LLM_MODEL` | Имя модели. Пустое имя оставляет шаблон |
 | `API_URL` | Адрес API для веб-CRM, по умолчанию `http://127.0.0.1:8000` |
-| `FETCH_INTERVAL_MINUTES` | Период beat |
+| `FETCH_INTERVAL_MINUTES` | Период сбора beat |
+| `DIGEST_HOUR_UTC` | Час ежедневной сводки, 0–23 |
 | `SEND_MODE` | Принимается только `confirmation`. Другое значение игнорируется |
 | `DATA_DIR` | Локальные дайджесты |
 | `LOG_LEVEL` | Уровень логов |
@@ -89,9 +90,22 @@ npm install
 API_URL=http://127.0.0.1:8000 npm run dev
 ```
 
-Список: `http://localhost:3000`. Фильтры — статус, источник, балл. Карточка: `/orders/{id}`, на ней история статусов. API: `uvicorn app.main:app --port 8000`. Excel в этом интерфейсе нет.
+Список: `http://localhost:3000`. Фильтры — статус, источник, балл. Карточка: `/orders/{id}`: история статусов, срок, расходы и задачи. Счётчики на списке — сколько заказов сейчас в статусе и сколько до него дошли. «Скачать CSV» выгружает текущий фильтр. API: `uvicorn app.main:app --port 8000`. Книги Excel нет.
 
-Для этого среза локально прогнаны `pytest` (45 тестов) и `npm run dev` с API на SQLite. `docker compose` не запускался.
+`GET /health` отвечает полями `api`, `database` и `redis`.
+
+Ежедневная сводка — задача Celery beat `intake.daily_digest`, час UTC задаёт `DIGEST_HOUR_UTC` (по умолчанию 6). Если заданы `TELEGRAM_BOT_TOKEN` и `TELEGRAM_CHAT_ID`, сводка уходит в Telegram. Иначе она пишется в `DATA_DIR/digests/` и в лог попадает `skipped_no_credentials`. `/pause` эту задачу пропускает.
+
+Копия Postgres:
+
+```bash
+python -m app.backup
+docker compose --profile backup run --rm backup
+```
+
+`python -m app.backup` вызывает `pg_dump` только для URL Postgres и кладёт файл в `DATA_DIR/backups/`. Для SQLite команда завершается без файла. Сервис `backup` в compose не входит в обычный `up`: его запускают отдельно. Пароль передаётся через `PGPASSWORD`, не через аргументы.
+
+В предыдущем срезе локально прогнаны `pytest` (45 тестов) и `npm run dev` с API на SQLite. `docker compose` тогда не запускался.
 
 ## Что проверено 5 ноября 2026
 
@@ -109,6 +123,15 @@ API_URL=http://127.0.0.1:8000 npm run dev
 
 Docker в этой среде не установлен, `docker compose up` не запускался. Healthcheck в compose описан, на сервере не доказан. Beat, worker и бот в этой проверке не крутились часами. Это не круглосуточный контур: нет проверенного сервера, живого расписания и внешнего наблюдения.
 
+## Что проверено в срезе расходов и сводки
+
+- `pytest`: 51 тест, все прошли. Среди них выгрузка CSV текущего фильтра и то, что одобрение без адаптера оставляет заказ неотправленым.
+- `npm run build` в `web/`.
+- Браузер на копии базы от 5 ноября: фильтр, срок, расход, задача и CSV. Новых заказов с площадок не добавлялось.
+- На этой машине установлены Docker и Compose. `GET /health` после `docker compose up` ответил `api`, `database` и `redis`: `ok`. Worker и beat зарегистрировали `intake.daily_digest`. Бот без токена завершился с кодом 0 и событием `telegram_bot_disabled`.
+- Профиль `backup` один раз снял локальный дамп пустой базы compose, файл `intake-20261105T185113Z.dump`. Это не копия рабочей базы.
+- Проверка была разовой. Это не круглосуточный контур.
+
 ## Чего в этом срезе нет
 
-Выгрузка в Excel, автоотклик, оплата откликов, обход капчи и вход за логином. Новый открытый RSS добавляется блоком `kind: rss_generic` в `config/sources.yaml`. Разбор площадок — в `docs/source-matrix.md`.
+Книга Excel, автоотклик, оплата откликов, обход капчи и вход за логином. CSV текущего фильтра есть. Новый открытый RSS добавляется блоком `kind: rss_generic` в `config/sources.yaml`. Разбор площадок — в `docs/source-matrix.md`.

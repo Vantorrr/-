@@ -2,12 +2,27 @@ import time
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel
 from sqlalchemy import text
 
 from app.bootstrap import prepare_storage
 from app.crm import TransitionError, apply_transition
+from app.crm_ops import (
+    OpsError,
+    add_expense,
+    add_task,
+    expense_summaries,
+    list_expenses,
+    list_tasks,
+    public_expense,
+    public_task,
+    render_csv,
+    set_due,
+    set_task_done,
+    status_funnel,
+    summarize_expenses,
+)
 from app import db
 from app.db import session_scope
 from app.logging_setup import configure_logging
@@ -25,6 +40,26 @@ class TransitionIn(BaseModel):
     status: str
     confirmation: dict | None = None
     note: str | None = None
+
+
+class ExpenseIn(BaseModel):
+    amount: str
+    currency: str
+    note: str | None = None
+    spent_on: str | None = None
+
+
+class DueIn(BaseModel):
+    due_on: str | None = None
+
+
+class TaskIn(BaseModel):
+    title: str
+    due_at: str | None = None
+
+
+class TaskDoneIn(BaseModel):
+    done: bool
 
 
 @asynccontextmanager
@@ -53,6 +88,7 @@ def health():
     except Exception:
         redis_ok = False
     body = {
+        "api": "ok",
         "status": "ok" if database == "ok" else "degraded",
         "database": database,
         "redis": "ok" if redis_ok else "unavailable",
@@ -83,11 +119,34 @@ def profile():
     return load_yaml(get_settings().config_path / "company_profile.yaml")
 
 
+@app.get("/api/stats/statuses")
+def status_stats():
+    with session_scope() as session:
+        return status_funnel(session)
+
+
 @app.get("/api/listings")
 def listings(status: str | None = None, min_score: int | None = None, source_id: str | None = None, limit: int = 50):
     with session_scope() as session:
         rows = list_listings(session, status=status, min_score=min_score, source_id=source_id, limit=limit)
-        return [public_listing(row) for row in rows]
+        summaries = expense_summaries(session, [row.id for row in rows])
+        payload = []
+        for row in rows:
+            item = public_listing(row)
+            item["expenses"] = summaries.get(row.id, "нет")
+            payload.append(item)
+        return payload
+
+
+@app.get("/api/listings.csv")
+def listings_csv(status: str | None = None, min_score: int | None = None, source_id: str | None = None, limit: int = 100):
+    with session_scope() as session:
+        payload = render_csv(session, status=status, min_score=min_score, source_id=source_id, limit=limit)
+    return Response(
+        content=payload,
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": "attachment; filename=orders.csv"},
+    )
 
 
 @app.get("/api/listings/{listing_id}")
@@ -96,9 +155,14 @@ def listing_detail(listing_id: str):
         row = session.get(Listing, listing_id)
         if row is None:
             raise HTTPException(status_code=404, detail="listing not found")
+        expenses = list_expenses(session, listing_id)
+        tasks = list_tasks(session, listing_id)
         payload = public_listing(row)
         payload["description"] = row.description or "неизвестно"
         payload["score_breakdown"] = row.score_breakdown or {}
+        payload["expenses"] = summarize_expenses(expenses)
+        payload["expense_items"] = [public_expense(item) for item in expenses]
+        payload["tasks"] = [public_task(item) for item in tasks]
         return payload
 
 
@@ -119,6 +183,59 @@ def listing_history(listing_id: str):
             }
             for event in events
         ]
+
+
+def _ops_call(listing_id: str, action):
+    with session_scope() as session:
+        if session.get(Listing, listing_id) is None:
+            raise HTTPException(status_code=404, detail="listing not found")
+        try:
+            action(session)
+        except OpsError as exc:
+            message = str(exc)
+            status_code = 404 if message in {"Заказ не найден.", "Задача не найдена."} else 400
+            raise HTTPException(status_code=status_code, detail=message) from exc
+        row = session.get(Listing, listing_id)
+        return public_listing(row) if row is not None else {"ok": True}
+
+
+@app.post("/api/listings/{listing_id}/expenses")
+def create_expense(listing_id: str, body: ExpenseIn):
+    def action(session):
+        add_expense(
+            session,
+            listing_id,
+            amount=body.amount,
+            currency=body.currency,
+            note=body.note,
+            spent_on=body.spent_on,
+        )
+
+    return _ops_call(listing_id, action)
+
+
+@app.post("/api/listings/{listing_id}/due")
+def update_due(listing_id: str, body: DueIn):
+    def action(session):
+        set_due(session, listing_id, body.due_on)
+
+    return _ops_call(listing_id, action)
+
+
+@app.post("/api/listings/{listing_id}/tasks")
+def create_task(listing_id: str, body: TaskIn):
+    def action(session):
+        add_task(session, listing_id, title=body.title, due_at=body.due_at)
+
+    return _ops_call(listing_id, action)
+
+
+@app.post("/api/listings/{listing_id}/tasks/{task_id}")
+def update_task(listing_id: str, task_id: str, body: TaskDoneIn):
+    def action(session):
+        set_task_done(session, listing_id, task_id, body.done)
+
+    return _ops_call(listing_id, action)
 
 
 @app.post("/api/listings/{listing_id}/transition")

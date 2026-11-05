@@ -1,3 +1,18 @@
+export type ExpenseItem = {
+  id: string;
+  amount: string;
+  currency: string;
+  note: string;
+  spent_on: string | null;
+};
+
+export type TaskItem = {
+  id: string;
+  title: string;
+  due_at: string | null;
+  done: boolean;
+};
+
 export type Listing = {
   id: string;
   title: string;
@@ -13,7 +28,17 @@ export type Listing = {
   proposal_origin_label: string;
   proposed_price: string;
   in_crm: boolean;
+  due_on: string;
+  expenses?: string;
+  expense_items?: ExpenseItem[];
+  tasks?: TaskItem[];
   description?: string;
+};
+
+export type StatusFunnel = {
+  current: Record<string, number>;
+  reached: Record<string, number>;
+  labels: Record<string, string>;
 };
 
 export type HistoryEvent = {

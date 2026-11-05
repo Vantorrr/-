@@ -1,6 +1,15 @@
+from datetime import date
+
 from app.display import buyer_type_label, format_budget, remote_label, unknown
 from app.llm import origin_label
 from app.models import Listing, StatusEvent
+
+
+def format_due(row) -> str:
+    value = getattr(row, "crm_due_on", None)
+    if not isinstance(value, date):
+        return "неизвестно"
+    return f"{value.day:02d}.{value.month:02d}.{value.year}"
 
 
 def public_listing(row) -> dict:
@@ -23,6 +32,7 @@ def public_listing(row) -> dict:
         "location": unknown(row.location),
         "published_at": published,
         "deadline": deadline,
+        "due_on": format_due(row),
         "exclusion_reasons": row.exclusion_reasons or [],
         "proposal": row.proposal_text,
         "proposal_chars": row.proposal_chars,

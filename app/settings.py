@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     llm_api_key: str = ""
     llm_base_url: str = ""
     llm_model: str = ""
+    digest_hour_utc: int = 6
 
     @property
     def config_path(self) -> Path:

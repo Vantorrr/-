@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { apiGet, type Listing } from "../lib/api";
+import { apiGet, type Listing, type StatusFunnel } from "../lib/api";
 import { STATUS_OPTIONS, statusLabel } from "../lib/labels";
 
 export const dynamic = "force-dynamic";
@@ -37,18 +37,39 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   if (minScore) query.set("min_score", minScore);
   query.set("limit", "100");
 
+  const exportQuery = new URLSearchParams(query);
   let rows: Listing[] = [];
+  let funnel: StatusFunnel | null = null;
   let error = "";
+  let funnelError = "";
   try {
     rows = await apiGet<Listing[]>(`/api/listings?${query.toString()}`);
   } catch {
     error = "Не удалось получить заказы из API.";
+  }
+  try {
+    funnel = await apiGet<StatusFunnel>("/api/stats/statuses");
+  } catch {
+    funnelError = "Счётчики недоступны.";
   }
 
   return (
     <>
       <h1>Заказы</h1>
       <p className="muted">Фильтр по статусу, источнику и баллу. Отправка заявок отсюда не запускается.</p>
+      <h2>Конверсия по статусам</h2>
+      {funnelError ? <p className="notice">{funnelError}</p> : null}
+      {funnel ? (
+        <div className="counts">
+          {STATUS_OPTIONS.map(([code, label]) => (
+            <div className="count" key={code}>
+              <strong>{label}</strong>
+              <div>сейчас {funnel.current[code] ?? 0}</div>
+              <div>дошли {funnel.reached[code] ?? 0}</div>
+            </div>
+          ))}
+        </div>
+      ) : null}
       <form method="get">
         <label>
           Статус
@@ -70,6 +91,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
           <input name="min_score" type="number" min={0} max={100} defaultValue={minScore} />
         </label>
         <button type="submit">Показать</button>
+        <a href={`/export?${exportQuery.toString()}`}>Скачать CSV</a>
       </form>
       {error ? <p className="notice">{error}</p> : null}
       {!error && rows.length === 0 ? <p className="notice">Заказов нет.</p> : null}
@@ -82,6 +104,8 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
               <th>Статус</th>
               <th>Балл</th>
               <th>Бюджет</th>
+              <th>Срок</th>
+              <th>Расходы</th>
               <th>В CRM</th>
             </tr>
           </thead>
@@ -95,6 +119,8 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
                 <td>{statusLabel(row.status)}</td>
                 <td>{row.score}</td>
                 <td>{row.budget}</td>
+                <td>{row.due_on || "неизвестно"}</td>
+                <td>{row.expenses || "нет"}</td>
                 <td>{row.in_crm ? "да" : "нет"}</td>
               </tr>
             ))}
