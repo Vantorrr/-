@@ -120,6 +120,9 @@ def test_run_once_dedups_scores_and_does_not_fake_telegram(memory_db, tmp_path, 
         assert by_ext["100"].proposal_origin == "template"
         assert "Договор можем оформить" not in by_ext["100"].proposal_text
         assert "Qora Group" not in by_ext["100"].proposal_text
+        assert "Понимание задачи" in by_ext["100"].commercial_proposal
+        assert "Юрлицо: неизвестно" in by_ext["100"].commercial_proposal
+        assert by_ext["102"].commercial_proposal is None
         assert by_ext["101"].exclusion_reasons == ["дубликат"]
         assert by_ext["101"].score == 0
         assert by_ext["101"].status == "checked"

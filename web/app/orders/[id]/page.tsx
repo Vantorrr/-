@@ -87,6 +87,15 @@ export default async function OrderPage({
               </dd>
             </dl>
           </div>
+          <h2>Коммерческое предложение</h2>
+          {listing.commercial_proposal ? (
+            <pre className="draft">{listing.commercial_proposal}</pre>
+          ) : (
+            <p className="notice">
+              Полное предложение пишется при балле от {listing.proposal_threshold ?? 60} и без причины исключения.
+              Короткий черновик площадки остаётся отдельно.
+            </p>
+          )}
           <h2>Срок</h2>
           <form className="stack" action={setDue.bind(null, listing.id)}>
             <label>

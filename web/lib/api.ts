@@ -24,6 +24,8 @@ export type Listing = {
   buyer_name: string;
   buyer_type: string;
   proposal: string | null;
+  commercial_proposal?: string | null;
+  proposal_threshold?: number;
   proposal_origin: string;
   proposal_origin_label: string;
   proposed_price: string;

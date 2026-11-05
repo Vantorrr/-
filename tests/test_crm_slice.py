@@ -1,9 +1,12 @@
+import io
 from datetime import datetime
 from pathlib import Path
 
+from openpyxl import load_workbook
+
 from app.backup import run_backup
 from app.crm import apply_transition
-from app.crm_ops import add_expense, render_csv, set_due, status_funnel
+from app.crm_ops import EXPORT_HEADERS, add_expense, render_csv, render_xlsx, set_due, status_funnel
 from app.daily import run_daily_digest
 from app.db import session_scope
 from app.models import Listing, Reminder, StatusEvent
@@ -80,6 +83,32 @@ def test_csv_export_follows_the_filter_and_invents_nothing(memory_db):
     assert empty_lines == ["Идентификатор,Название,Источник,Статус,Балл,Бюджет,Срок,Расходы,Ссылка"]
 
 
+def test_xlsx_export_one_row_of_the_current_filter(memory_db):
+    with session_scope() as session:
+        session.add(_listing(LISTING_ID, title="Каталог для мастерской"))
+        session.add(
+            _listing(
+                OTHER_ID,
+                source_id="habr_career",
+                title="Вакансия без отправки",
+                url="https://career.habr.com/vacancies/2",
+                score=40,
+                status="rejected",
+                fit=False,
+            )
+        )
+        payload = render_xlsx(session, status="awaiting_approval", min_score=None, source_id="fl_ru", limit=100)
+    book = load_workbook(io.BytesIO(payload))
+    sheet = book.active
+    assert [cell.value for cell in sheet[1]] == EXPORT_HEADERS
+    assert sheet.max_row == 2
+    assert sheet["B2"].value == "Каталог для мастерской"
+    assert sheet["D2"].value == "ждёт подтверждения"
+    values = [value for row in sheet.iter_rows(values_only=True) for value in row]
+    assert "Вакансия без отправки" not in values
+    assert "ООО Ромашка" not in values
+
+
 def test_approve_without_adapter_stays_unsent(memory_db):
     with session_scope() as session:
         session.add(_listing(LISTING_ID))
@@ -117,6 +146,41 @@ def test_daily_digest_without_credentials_is_local(memory_db, tmp_path, monkeypa
     assert "Позвонить по каталогу" in text
     assert "срок: неизвестно" in text
     assert "ООО Ромашка" not in text
+    get_settings.cache_clear()
+
+
+def test_daily_digest_includes_due_tasks_and_stays_unsent(memory_db, tmp_path, monkeypatch):
+    events = []
+    monkeypatch.setattr("app.daily.is_paused", lambda: False)
+    monkeypatch.setattr("app.daily.log.info", lambda event, **kwargs: events.append(event))
+    monkeypatch.setenv("DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "")
+    monkeypatch.setenv("TELEGRAM_CHAT_ID", "")
+    get_settings.cache_clear()
+    with session_scope() as session:
+        session.add(_listing(LISTING_ID))
+        session.add(
+            Reminder(
+                id="dddddddd-dddd-dddd-dddd-dddddddddddd",
+                listing_id=LISTING_ID,
+                title="Срок по каталогу уже прошёл",
+                due_at=datetime(2026, 11, 1, 8, 0, 0),
+                done=False,
+                created_at=datetime(2026, 11, 1, 8, 0, 0),
+            )
+        )
+    result = run_daily_digest()
+    assert result["status"] == "skipped_no_credentials"
+    assert "skipped_no_credentials" in events
+    text = Path(result["path"]).read_text(encoding="utf-8")
+    assert "Задачи к сроку:" in text
+    assert "Срок по каталогу уже прошёл" in text
+    assert "2026-11-01T08:00:00Z" in text
+    assert "не отправлялся" in text
+    with session_scope() as session:
+        row = session.get(Listing, LISTING_ID)
+        assert row.status == "awaiting_approval"
+        assert session.query(StatusEvent).filter(StatusEvent.to_status == "sent").count() == 0
     get_settings.cache_clear()
 
 

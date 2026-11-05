@@ -18,6 +18,7 @@ from app.crm_ops import (
     public_expense,
     public_task,
     render_csv,
+    render_xlsx,
     set_due,
     set_task_done,
     status_funnel,
@@ -27,7 +28,8 @@ from app import db
 from app.db import session_scope
 from app.logging_setup import configure_logging
 from app.models import DigestRecord, Listing, PipelineRun
-from app.pipeline import run_once
+from app.pipeline import load_yaml, run_once
+from app.proposals import stored_or_commercial
 from app.queries import list_listings, list_status_events, public_listing
 from app.runtime import is_paused, set_paused
 from app.settings import get_settings
@@ -149,6 +151,17 @@ def listings_csv(status: str | None = None, min_score: int | None = None, source
     )
 
 
+@app.get("/api/listings.xlsx")
+def listings_xlsx(status: str | None = None, min_score: int | None = None, source_id: str | None = None, limit: int = 100):
+    with session_scope() as session:
+        payload = render_xlsx(session, status=status, min_score=min_score, source_id=source_id, limit=limit)
+    return Response(
+        content=payload,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": "attachment; filename=orders.xlsx"},
+    )
+
+
 @app.get("/api/listings/{listing_id}")
 def listing_detail(listing_id: str):
     with session_scope() as session:
@@ -157,9 +170,15 @@ def listing_detail(listing_id: str):
             raise HTTPException(status_code=404, detail="listing not found")
         expenses = list_expenses(session, listing_id)
         tasks = list_tasks(session, listing_id)
+        settings = get_settings()
+        scoring = load_yaml(settings.config_path / "scoring.yaml")
+        profile = load_yaml(settings.config_path / "company_profile.yaml")
+        threshold = int(scoring.get("threshold") or 0)
         payload = public_listing(row)
         payload["description"] = row.description or "неизвестно"
         payload["score_breakdown"] = row.score_breakdown or {}
+        payload["proposal_threshold"] = threshold
+        payload["commercial_proposal"] = stored_or_commercial(row, profile, threshold=threshold)
         payload["expenses"] = summarize_expenses(expenses)
         payload["expense_items"] = [public_expense(item) for item in expenses]
         payload["tasks"] = [public_task(item) for item in tasks]

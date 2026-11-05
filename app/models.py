@@ -51,6 +51,7 @@ class Listing(Base):
     duplicate_of_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
     fingerprint: Mapped[str] = mapped_column(String(64), index=True)
     proposal_text: Mapped[str | None] = mapped_column(Text, nullable=True)
+    commercial_proposal: Mapped[str | None] = mapped_column(Text, nullable=True)
     proposal_chars: Mapped[int | None] = mapped_column(Integer, nullable=True)
     proposal_origin: Mapped[str] = mapped_column(String(16), default="template", server_default="template")
     proposed_price_text: Mapped[str | None] = mapped_column(Text, nullable=True)

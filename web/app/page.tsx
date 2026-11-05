@@ -92,6 +92,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         </label>
         <button type="submit">Показать</button>
         <a href={`/export?${exportQuery.toString()}`}>Скачать CSV</a>
+        <a href={`/export/xlsx?${exportQuery.toString()}`}>Скачать Excel</a>
       </form>
       {error ? <p className="notice">{error}</p> : null}
       {!error && rows.length === 0 ? <p className="notice">Заказов нет.</p> : null}

@@ -14,6 +14,7 @@ from app.http import PoliteClient
 from app.logging_setup import get_logger
 from app.models import DigestRecord, Listing, PipelineRun
 from app.llm import draft_for_listing
+from app.proposals import commercial_proposal
 from app.runtime import acquire_run_lock, is_paused, release_run_lock
 from app.scoring import load_check, score_listing
 from app.settings import get_settings
@@ -232,6 +233,7 @@ def ingest(raws, *, profile: dict, scoring: dict, limits: dict, now: datetime) -
             listing.proposal_text = draft.text
             listing.proposal_chars = len(draft.text)
             listing.proposal_origin = draft.origin
+            listing.commercial_proposal = commercial_proposal(listing, profile, threshold=threshold)
             apply_transition(listing, "proposal_ready", session, actor="system")
             apply_transition(listing, "awaiting_approval", session, actor="system", note="send_mode=confirmation")
             fit += 1
