@@ -10,7 +10,9 @@ def test_health_and_sources_do_not_claim_a_send():
         health = client.get("/health")
         assert health.status_code == 200
         body = health.json()
+        assert body["api"] == "ok"
         assert body["database"] == "ok"
+        assert body["redis"] in {"ok", "unavailable"}
         assert body["send_mode"] == "confirmation"
         sources = client.get("/api/sources")
         assert sources.status_code == 200

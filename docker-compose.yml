@@ -35,6 +35,7 @@ services:
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
       HTTP_TIMEOUT_SECONDS: ${HTTP_TIMEOUT_SECONDS:-25}
       HTTP_MIN_INTERVAL_SECONDS: ${HTTP_MIN_INTERVAL_SECONDS:-2}
+      DIGEST_HOUR_UTC: ${DIGEST_HOUR_UTC:-6}
     depends_on:
       postgres:
         condition: service_healthy
@@ -94,6 +95,25 @@ services:
     volumes:
       - digests:/data
 
+  backup:
+    image: postgres:16-alpine
+    profiles: ["backup"]
+    environment:
+      PGHOST: postgres
+      PGPORT: "5432"
+      PGUSER: ${POSTGRES_USER:-intake}
+      PGPASSWORD: ${POSTGRES_PASSWORD:-intake}
+      PGDATABASE: ${POSTGRES_DB:-intake}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - backups:/backups
+    entrypoint: ["sh", "-c"]
+    command: ["pg_dump -Fc -f /backups/intake-$$(date -u +%Y%m%dT%H%M%SZ).dump"]
+    restart: "no"
+
 volumes:
   pgdata:
   digests:
+  backups:

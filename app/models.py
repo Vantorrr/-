@@ -1,6 +1,18 @@
-from datetime import datetime
+from datetime import date, datetime
 
-from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Integer, Numeric, String, Text, UniqueConstraint, false as sql_false
+from sqlalchemy import (
+    JSON,
+    Boolean,
+    Date,
+    DateTime,
+    ForeignKey,
+    Integer,
+    Numeric,
+    String,
+    Text,
+    UniqueConstraint,
+    false as sql_false,
+)
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db import Base
@@ -43,6 +55,7 @@ class Listing(Base):
     proposal_origin: Mapped[str] = mapped_column(String(16), default="template", server_default="template")
     proposed_price_text: Mapped[str | None] = mapped_column(Text, nullable=True)
     in_crm: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, server_default=sql_false())
+    crm_due_on: Mapped[date | None] = mapped_column(Date, nullable=True)
     raw_payload: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     fetched_at: Mapped[datetime] = mapped_column(DateTime)
     updated_at: Mapped[datetime] = mapped_column(DateTime)
@@ -70,6 +83,29 @@ class PipelineRun(Base):
     status: Mapped[str] = mapped_column(String(16))
     stats: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     error: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+
+class Expense(Base):
+    __tablename__ = "expenses"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    listing_id: Mapped[str] = mapped_column(ForeignKey("listings.id"), index=True)
+    amount: Mapped[float] = mapped_column(Numeric(14, 2))
+    currency: Mapped[str] = mapped_column(String(3))
+    note: Mapped[str | None] = mapped_column(Text, nullable=True)
+    spent_on: Mapped[date | None] = mapped_column(Date, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime)
+
+
+class Reminder(Base):
+    __tablename__ = "reminders"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    listing_id: Mapped[str] = mapped_column(ForeignKey("listings.id"), index=True)
+    title: Mapped[str] = mapped_column(Text)
+    due_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    done: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, server_default=sql_false())
+    created_at: Mapped[datetime] = mapped_column(DateTime)
 
 
 class DraftEdit(Base):
