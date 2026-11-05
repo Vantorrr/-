@@ -13,7 +13,7 @@ from app.digest import format_digest
 from app.http import PoliteClient
 from app.logging_setup import get_logger
 from app.models import DigestRecord, Listing, PipelineRun
-from app.proposals import draft_proposal
+from app.llm import draft_for_listing
 from app.runtime import acquire_run_lock, is_paused, release_run_lock
 from app.scoring import load_check, score_listing
 from app.settings import get_settings
@@ -224,12 +224,14 @@ def ingest(raws, *, profile: dict, scoring: dict, limits: dict, now: datetime) -
             if result.excluded or not listing.fit:
                 excluded += int(result.excluded)
                 continue
-            listing.proposal_text = draft_proposal(
+            draft = draft_for_listing(
                 listing,
                 profile,
                 max_chars=int(limits.get(listing.source_id) or 900),
             )
-            listing.proposal_chars = len(listing.proposal_text)
+            listing.proposal_text = draft.text
+            listing.proposal_chars = len(draft.text)
+            listing.proposal_origin = draft.origin
             apply_transition(listing, "proposal_ready", session, actor="system")
             apply_transition(listing, "awaiting_approval", session, actor="system", note="send_mode=confirmation")
             fit += 1
@@ -262,6 +264,7 @@ def _snapshot(listing: Listing):
         location=listing.location,
         url=listing.url,
         proposal_text=listing.proposal_text,
+        proposal_origin=getattr(listing, "proposal_origin", None) or "template",
     )
 
 

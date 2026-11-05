@@ -1,0 +1,113 @@
+:root {
+  color-scheme: light;
+  font-family: "Segoe UI", "PT Sans", sans-serif;
+  background: #f4f1ea;
+  color: #1c1915;
+}
+
+body {
+  margin: 0;
+}
+
+main {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 28px 16px 56px;
+}
+
+h1 {
+  font-size: 28px;
+  margin: 0 0 8px;
+}
+
+h2 {
+  font-size: 18px;
+  margin: 28px 0 8px;
+}
+
+a {
+  color: #6b3a1f;
+}
+
+.muted {
+  color: #5c564e;
+}
+
+form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+  margin: 18px 0 20px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+}
+
+input,
+select,
+button {
+  font: inherit;
+  padding: 7px 8px;
+}
+
+button {
+  background: #1c1915;
+  color: #fff;
+  border: 0;
+  cursor: pointer;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid #e4ddd2;
+  vertical-align: top;
+}
+
+.card,
+.notice {
+  background: #fff;
+  padding: 16px;
+}
+
+dl {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 8px 12px;
+  margin: 0;
+}
+
+dt {
+  color: #5c564e;
+}
+
+dd {
+  margin: 0;
+}
+
+.draft {
+  white-space: pre-wrap;
+}
+
+@media (max-width: 700px) {
+  dl {
+    grid-template-columns: 1fr;
+  }
+
+  table {
+    display: block;
+    overflow-x: auto;
+  }
+}

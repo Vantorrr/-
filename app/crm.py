@@ -13,14 +13,30 @@ STATUSES = (
     "contract",
     "won",
     "lost",
+    "rejected",
 )
+
+STATUS_LABELS = {
+    "found": "найдено",
+    "checked": "проверено",
+    "proposal_ready": "черновик готов",
+    "awaiting_approval": "ждёт подтверждения",
+    "sent": "отправлено",
+    "replied": "есть ответ",
+    "negotiation": "переговоры",
+    "contract": "договор",
+    "won": "выиграно",
+    "lost": "проиграно",
+    "rejected": "отклонено",
+}
 
 ALLOWED: dict[str | None, set[str]] = {
     None: {"found"},
     "found": {"checked"},
     "checked": {"proposal_ready", "lost"},
     "proposal_ready": {"awaiting_approval", "lost"},
-    "awaiting_approval": {"sent", "lost"},
+    "awaiting_approval": {"sent", "lost", "rejected"},
+    "rejected": set(),
     "sent": {"replied", "lost"},
     "replied": {"negotiation", "lost"},
     "negotiation": {"contract", "lost"},

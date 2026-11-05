@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Integer, Numeric, String, Text, UniqueConstraint
+from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Integer, Numeric, String, Text, UniqueConstraint, false as sql_false
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db import Base
@@ -40,6 +40,9 @@ class Listing(Base):
     fingerprint: Mapped[str] = mapped_column(String(64), index=True)
     proposal_text: Mapped[str | None] = mapped_column(Text, nullable=True)
     proposal_chars: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    proposal_origin: Mapped[str] = mapped_column(String(16), default="template", server_default="template")
+    proposed_price_text: Mapped[str | None] = mapped_column(Text, nullable=True)
+    in_crm: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, server_default=sql_false())
     raw_payload: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     fetched_at: Mapped[datetime] = mapped_column(DateTime)
     updated_at: Mapped[datetime] = mapped_column(DateTime)
@@ -67,6 +70,14 @@ class PipelineRun(Base):
     status: Mapped[str] = mapped_column(String(16))
     stats: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     error: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+
+class DraftEdit(Base):
+    __tablename__ = "draft_edits"
+
+    chat_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    listing_id: Mapped[str] = mapped_column(String(36))
+    created_at: Mapped[datetime] = mapped_column(DateTime)
 
 
 class DigestRecord(Base):

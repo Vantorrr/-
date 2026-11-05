@@ -27,6 +27,31 @@ def init_db() -> None:
     from app import models  # noqa: F401
 
     Base.metadata.create_all(engine)
+    _ensure_listing_columns()
+
+
+def _ensure_listing_columns() -> None:
+    from sqlalchemy import inspect, text
+
+    inspector = inspect(engine)
+    if "listings" not in inspector.get_table_names():
+        return
+    present = {column["name"] for column in inspector.get_columns("listings")}
+    statements = []
+    if "proposal_origin" not in present:
+        statements.append("ALTER TABLE listings ADD COLUMN proposal_origin VARCHAR(16) DEFAULT 'template'")
+    if "proposed_price_text" not in present:
+        statements.append("ALTER TABLE listings ADD COLUMN proposed_price_text TEXT")
+    if "in_crm" not in present:
+        if engine.dialect.name == "sqlite":
+            statements.append("ALTER TABLE listings ADD COLUMN in_crm BOOLEAN NOT NULL DEFAULT 0")
+        else:
+            statements.append("ALTER TABLE listings ADD COLUMN in_crm BOOLEAN NOT NULL DEFAULT FALSE")
+    if not statements:
+        return
+    with engine.begin() as connection:
+        for statement in statements:
+            connection.execute(text(statement))
 
 
 @contextmanager
