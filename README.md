@@ -13,7 +13,7 @@ cp .env.example .env
 docker compose up --build
 ```
 
-Поднимаются API (`http://localhost:8000`), worker Celery, beat, Postgres, Redis и процесс бота. Без `TELEGRAM_BOT_TOKEN` бот не подключается к Telegram и просто ждёт: контейнер не падает и ничего не отправляет.
+Поднимаются API (`http://localhost:8000`), worker Celery, beat, Postgres, Redis и процесс бота. Без `TELEGRAM_BOT_TOKEN` процесс бота пишет причину в лог и завершается, сообщения не отправляет. У сервиса `bot` стоит `restart: "no"`.
 
 Проверка:
 
@@ -39,14 +39,20 @@ python -m app.cli run
 
 Тесты: `pytest`.
 
+Бот без Docker: `python -m app.telegram.bot`. Веб-CRM: см. раздел ниже.
+
 ## Переменные
 
 | Переменная | Зачем |
 | --- | --- |
 | `DATABASE_URL` | Postgres в compose, иначе SQLite |
 | `REDIS_URL` | Очередь Celery, пауза, замок прогона |
-| `TELEGRAM_BOT_TOKEN` | Если пусто, отправки нет |
-| `TELEGRAM_CHAT_ID` | Чат дайджеста и команд `/orders`, `/top`, `/pause`, `/resume` |
+| `TELEGRAM_BOT_TOKEN` | Если пусто, бот завершается и ничего не отправляет |
+| `TELEGRAM_CHAT_ID` | Чат дайджеста и команд бота |
+| `LLM_API_KEY` | Если пусто, черновик остаётся шаблоном |
+| `LLM_BASE_URL` | Адрес OpenAI-совместимого API. Пустой адрес оставляет шаблон |
+| `LLM_MODEL` | Имя модели. Пустое имя оставляет шаблон |
+| `API_URL` | Адрес API для веб-CRM, по умолчанию `http://127.0.0.1:8000` |
 | `FETCH_INTERVAL_MINUTES` | Период beat |
 | `SEND_MODE` | Принимается только `confirmation`. Другое значение игнорируется |
 | `DATA_DIR` | Локальные дайджесты |
@@ -62,14 +68,30 @@ python -m app.cli run
 2. Пишет новые карточки. Повтор того же `source_id` + `external_id` не создаёт вторую строку.
 3. Сверяет длинные похожие заголовки и одинаковые URL. Совпадение помечается «дубликат», балл 0.
 4. Считает балл по `config/scoring.yaml`. Неизвестное поле остаётся «неизвестно».
-5. Для порога и выше готовит черновик и ставит статусы `found` → `checked` → `proposal_ready` → `awaiting_approval`.
+5. Для порога и выше готовит черновик и ставит статусы `found` → `checked` → `proposal_ready` → `awaiting_approval`. Без ключа LLM черновик — шаблон, в карточке он так и подписан.
 6. Пишет дайджест. В текст попадают 15 лучших по баллу, остальные остаются в базе.
 
 Черновик берёт только заполненные поля `config/company_profile.yaml`. Файл изначально пустой: нет юрлица, кейсов, команды, сертификатов и контактов. Пока поле пустое, в текст оно не подставляется.
 
-Статусы CRM: `found`, `checked`, `proposal_ready`, `awaiting_approval`, `sent`, `replied`, `negotiation`, `contract`, `won`, `lost`. Переход в `sent` через `POST /api/listings/{id}/transition` требует `confirmation.ok = true` и `external_result_id`. Сам сервис этот переход не делает.
+Статусы CRM: `found`, `checked`, `proposal_ready`, `awaiting_approval`, `sent`, `replied`, `negotiation`, `contract`, `won`, `lost`, `rejected`. Переход в `sent` требует подтверждённый результат адаптера: `confirmation.ok = true` и `external_result_id`. Кнопка «Одобрить отправку» у источника без такого API статус `sent` не ставит.
 
-Команды бота отвечают только в `TELEGRAM_CHAT_ID`.
+## Команды бота и веб-CRM
+
+Команды отвечают только в `TELEGRAM_CHAT_ID`: `/start`, `/orders`, `/top`, `/stats`, `/replies`, `/settings`, `/pause`, `/resume`.
+
+Карточка показывает название, бюджет, источник, балл, ссылку, кратко, предлагаемую цену и черновик. Кнопки: одобрить отправку, править, отклонить, открыть заказ, в CRM. Предлагаемая цена остаётся «неизвестно», пока её не заполнили отдельно. Правка черновика не ставит `sent`.
+
+Веб-CRM, отдельно от API:
+
+```bash
+cd web
+npm install
+API_URL=http://127.0.0.1:8000 npm run dev
+```
+
+Список: `http://localhost:3000`. Фильтры — статус, источник, балл. Карточка: `/orders/{id}`, на ней история статусов. API: `uvicorn app.main:app --port 8000`. Excel в этом интерфейсе нет.
+
+Для этого среза локально прогнаны `pytest` (45 тестов) и `npm run dev` с API на SQLite. `docker compose` не запускался.
 
 ## Что проверено 5 ноября 2026
 
@@ -89,4 +111,4 @@ Docker в этой среде не установлен, `docker compose up` н�
 
 ## Чего в этом срезе нет
 
-Веб-CRM, выгрузка в Excel, автоотклик, оплата откликов, обход капчи и вход за логином. Новый открытый RSS добавляется блоком `kind: rss_generic` в `config/sources.yaml`. Разбор площадок — в `docs/source-matrix.md`.
+Выгрузка в Excel, автоотклик, оплата откликов, обход капчи и вход за логином. Новый открытый RSS добавляется блоком `kind: rss_generic` в `config/sources.yaml`. Разбор площадок — в `docs/source-matrix.md`.

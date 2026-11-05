@@ -22,6 +22,9 @@ class Settings(BaseSettings):
     http_min_interval_seconds: float = 2
     http_max_retries: int = 3
     user_agent: str = "QoraIntake/0.1 (public feed reader; no bid submission)"
+    llm_api_key: str = ""
+    llm_base_url: str = ""
+    llm_model: str = ""
 
     @property
     def config_path(self) -> Path:

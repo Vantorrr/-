@@ -84,6 +84,7 @@ services:
   bot:
     build: .
     command: python -m app.telegram.bot
+    restart: "no"
     environment: *app_env
     depends_on:
       postgres:

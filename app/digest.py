@@ -1,4 +1,5 @@
 from app.display import buyer_type_label, format_budget, remote_label, unknown
+from app.llm import origin_label
 
 
 def format_listing_block(listing, index: int) -> str:
@@ -12,7 +13,7 @@ def format_listing_block(listing, index: int) -> str:
         f"Ссылка: {listing.url}",
     ]
     if listing.proposal_text:
-        lines.append("Черновик:")
+        lines.append(f"Черновик ({origin_label(getattr(listing, 'proposal_origin', None))}):")
         lines.append(listing.proposal_text)
     return "\n".join(lines)
 

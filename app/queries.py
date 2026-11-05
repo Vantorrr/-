@@ -1,5 +1,6 @@
 from app.display import buyer_type_label, format_budget, remote_label, unknown
-from app.models import Listing
+from app.llm import origin_label
+from app.models import Listing, StatusEvent
 
 
 def public_listing(row) -> dict:
@@ -25,6 +26,10 @@ def public_listing(row) -> dict:
         "exclusion_reasons": row.exclusion_reasons or [],
         "proposal": row.proposal_text,
         "proposal_chars": row.proposal_chars,
+        "proposal_origin": getattr(row, "proposal_origin", None) or "template",
+        "proposal_origin_label": origin_label(getattr(row, "proposal_origin", None)),
+        "proposed_price": (getattr(row, "proposed_price_text", None) or "").strip() or "неизвестно",
+        "in_crm": bool(getattr(row, "in_crm", False)),
         "duplicate_of_id": row.duplicate_of_id,
     }
 
@@ -45,3 +50,32 @@ def list_listings(
     if source_id:
         query = query.filter(Listing.source_id == source_id)
     return query.order_by(Listing.score.desc(), Listing.fetched_at.desc()).limit(min(limit, 200)).all()
+
+
+def top_listings(session, limit: int = 5):
+    return (
+        session.query(Listing)
+        .filter(Listing.fit.is_(True))
+        .order_by(Listing.score.desc(), Listing.fetched_at.desc())
+        .limit(limit)
+        .all()
+    )
+
+
+def reply_listings(session, limit: int = 5):
+    return (
+        session.query(Listing)
+        .filter(Listing.status.in_(("replied", "negotiation")))
+        .order_by(Listing.updated_at.desc())
+        .limit(limit)
+        .all()
+    )
+
+
+def list_status_events(session, listing_id: str):
+    return (
+        session.query(StatusEvent)
+        .filter(StatusEvent.listing_id == listing_id)
+        .order_by(StatusEvent.created_at.asc(), StatusEvent.id.asc())
+        .all()
+    )

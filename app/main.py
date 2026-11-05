@@ -13,7 +13,7 @@ from app.db import session_scope
 from app.logging_setup import configure_logging
 from app.models import DigestRecord, Listing, PipelineRun
 from app.pipeline import run_once
-from app.queries import list_listings, public_listing
+from app.queries import list_listings, list_status_events, public_listing
 from app.runtime import is_paused, set_paused
 from app.settings import get_settings
 from app.sources.registry import load_source_specs
@@ -100,6 +100,25 @@ def listing_detail(listing_id: str):
         payload["description"] = row.description or "неизвестно"
         payload["score_breakdown"] = row.score_breakdown or {}
         return payload
+
+
+@app.get("/api/listings/{listing_id}/history")
+def listing_history(listing_id: str):
+    with session_scope() as session:
+        row = session.get(Listing, listing_id)
+        if row is None:
+            raise HTTPException(status_code=404, detail="listing not found")
+        events = list_status_events(session, listing_id)
+        return [
+            {
+                "from_status": event.from_status,
+                "to_status": event.to_status,
+                "actor": event.actor,
+                "note": event.note,
+                "at": event.created_at.isoformat() + "Z",
+            }
+            for event in events
+        ]
 
 
 @app.post("/api/listings/{listing_id}/transition")
