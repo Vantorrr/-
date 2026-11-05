@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SYNTHETIC FIXTURE. Not captured from zakupki.gov.ru: the live RSS timed out from this environment on 2026-11-05.
+     Shape follows a public RSS item with regNumber and НМЦК. Tests only. Never treated as a live order. -->
+<rss version="2.0">
+  <channel>
+    <title>synthetic</title>
+    <link>https://zakupki.gov.ru</link>
+    <description>synthetic</description>
+    <item>
+      <title>Оказание услуг по разработке программного обеспечения</title>
+      <link>https://zakupki.gov.ru/epz/order/notice/ea20/view/common-info.html?regNumber=0373100040126000001</link>
+      <description>Заказчик: ГБУ «Тестовый заказчик». НМЦК: 1 500 000,00 Российский рубль.</description>
+      <pubDate>Wed, 04 Nov 2026 08:00:00 GMT</pubDate>
+    </item>
+  </channel>
+</rss>
