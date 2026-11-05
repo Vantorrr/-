@@ -186,16 +186,17 @@ def _cell(value) -> str:
     return text
 
 
-def render_csv(session, *, status: str | None, min_score: int | None, source_id: str | None, limit: int) -> str:
+EXPORT_HEADERS = ["Идентификатор", "Название", "Источник", "Статус", "Балл", "Бюджет", "Срок", "Расходы", "Ссылка"]
+
+
+def export_rows(session, *, status: str | None, min_score: int | None, source_id: str | None, limit: int) -> list[list[str]]:
     rows = list_listings(session, status=status, min_score=min_score, source_id=source_id, limit=limit)
     summaries = expense_summaries(session, [row.id for row in rows])
-    buffer = io.StringIO()
-    writer = csv.writer(buffer)
-    writer.writerow(["Идентификатор", "Название", "Источник", "Статус", "Балл", "Бюджет", "Срок", "Расходы", "Ссылка"])
+    table = []
     for row in rows:
         payload = public_listing(row)
         status_label = STATUS_LABELS.get(row.status or "", "неизвестно")
-        writer.writerow(
+        table.append(
             [
                 _cell(row.id),
                 _cell(row.title),
@@ -208,4 +209,27 @@ def render_csv(session, *, status: str | None, min_score: int | None, source_id:
                 _cell(row.url),
             ]
         )
+    return table
+
+
+def render_csv(session, *, status: str | None, min_score: int | None, source_id: str | None, limit: int) -> str:
+    buffer = io.StringIO()
+    writer = csv.writer(buffer)
+    writer.writerow(EXPORT_HEADERS)
+    for line in export_rows(session, status=status, min_score=min_score, source_id=source_id, limit=limit):
+        writer.writerow(line)
     return "\ufeff" + buffer.getvalue()
+
+
+def render_xlsx(session, *, status: str | None, min_score: int | None, source_id: str | None, limit: int) -> bytes:
+    from openpyxl import Workbook
+
+    book = Workbook()
+    sheet = book.active
+    sheet.title = "Заказы"
+    sheet.append(EXPORT_HEADERS)
+    for line in export_rows(session, status=status, min_score=min_score, source_id=source_id, limit=limit):
+        sheet.append(line)
+    buffer = io.BytesIO()
+    book.save(buffer)
+    return buffer.getvalue()

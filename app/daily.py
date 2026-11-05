@@ -1,6 +1,8 @@
 import uuid
 from pathlib import Path
 
+from sqlalchemy import or_
+
 from app.crm import STATUS_LABELS, STATUSES, utcnow
 from app.crm_ops import status_funnel
 from app.db import session_scope
@@ -37,10 +39,27 @@ def render_daily_digest(session) -> str:
             lines.append(format_listing_block(row, index))
             lines.append(f"Срок: {format_due(row)}")
             lines.append("")
+    now = utcnow()
+    lines.append("Задачи к сроку:")
+    due_tasks = (
+        session.query(Reminder)
+        .filter(Reminder.done.is_(False), Reminder.due_at.is_not(None), Reminder.due_at <= now)
+        .order_by(Reminder.due_at.asc())
+        .limit(30)
+        .all()
+    )
+    if not due_tasks:
+        lines.append("Задач к сроку нет.")
+    else:
+        for task in due_tasks:
+            due = task.due_at.isoformat() + "Z"
+            lines.append(f"- {task.title} (срок: {due})")
+    lines.append("")
     lines.append("Открытые задачи:")
     open_tasks = (
         session.query(Reminder)
         .filter(Reminder.done.is_(False))
+        .filter(or_(Reminder.due_at.is_(None), Reminder.due_at > now))
         .order_by(Reminder.created_at.asc())
         .limit(30)
         .all()

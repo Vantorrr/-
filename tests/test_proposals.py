@@ -2,7 +2,7 @@ from types import SimpleNamespace
 
 import yaml
 
-from app.proposals import CLICHES, draft_proposal
+from app.proposals import CLICHES, commercial_proposal, draft_proposal
 from app.settings import ROOT
 
 
@@ -68,6 +68,47 @@ def test_filled_profile_uses_only_matching_facts():
     assert "Интеграции CRM и API" in text
     assert "WebGL" not in text
     assert "Внедрение CRM для сети" in text
+
+
+def test_empty_profile_commercial_proposal_marks_missing_facts():
+    listing = SimpleNamespace(
+        title="Разработка каталога",
+        description="Нужно " + ("описать состав работ и согласовать объём " * 40),
+        category=None,
+        lead_kind="order",
+        budget_kind="unknown",
+        budget_min=None,
+        budget_max=None,
+        budget_currency=None,
+        remote=None,
+        buyer_name=None,
+        deadline=None,
+        crm_due_on=None,
+        proposed_price_text=None,
+        score=80,
+        exclusion_reasons=None,
+        duplicate_of_id=None,
+        source_id="profi_ru",
+    )
+    profile = profile_file()
+    short = draft_proposal(listing, profile, max_chars=500)
+    text = commercial_proposal(listing, profile, threshold=60)
+    assert text is not None
+    assert len(short) <= 500
+    assert len(text) > 500
+    assert "## Понимание задачи" in text
+    assert "## Подход" in text
+    assert "## Срок" in text
+    assert "## Обоснование цены" in text
+    assert "неизвестно" in text
+    assert "Юрлицо: неизвестно" in text
+    assert "Кейсы: неизвестно" in text
+    assert "Сертификаты: неизвестно" in text
+    assert "Заказчик: неизвестно" in text
+    assert "Предлагаемая цена: неизвестно" in text
+    for banned in ("ООО Ромашка", "ООО «Ромашка»", "ИП Иванов", "Qora Group", "ISO 9001", "Газпром"):
+        assert banned not in text
+    assert commercial_proposal(listing, profile, threshold=90) is None
 
 
 def test_profi_draft_stays_within_500_chars():
