@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- RECORDED FIXTURE. Captured from https://career.habr.com/vacancies/rss?currency=RUR&sort=date&type=all&q=Python
+     on 2026-11-05. One item. Tests only. The pipeline never reads this file. -->
+<rss version="2.0">
+  <channel>
+    <title>Вакансии — Хабр Карьера</title>
+    <link>https://career.habr.com/vacancies/rss</link>
+    <description>Вакансии — Хабр Карьера</description>
+    <language>ru</language>
+    <item>
+      <title>Требуется «Инженер по информационной безопасности» (Москва)</title>
+      <description>Компания «YCLIENTS» ищет хорошего специалиста на вакансию «Инженер по информационной безопасности». Москва (Россия). Полный рабочий день. Требуемые навыки: #middle, #Информационнаябезопасность, #PHP, #Kubernetes, #Docker, #Python, #Bash.</description>
+      <author>YCLIENTS</author>
+      <pubDate>Thu, 05 Nov 2026 20:20:12 +0300</pubDate>
+      <link>https://career.habr.com/vacancies/1000169471</link>
+      <guid>1000169471</guid>
+    </item>
+  </channel>
+</rss>

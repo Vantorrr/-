@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- RECORDED FIXTURE. Captured from https://www.fl.ru/rss/all.xml?category=5 on 2026-11-05.
+     Two items, descriptions kept as returned. Used only by tests. The pipeline never reads this file. -->
+<rss version="2.0">
+  <channel>
+    <title>Заказы на FL.ru (Фри-ланс: Программирование)</title>
+    <link>https://www.fl.ru</link>
+    <description>fixture</description>
+    <item>
+      <title><![CDATA[Создание бота]]></title>
+      <link>https://www.fl.ru/projects/5528169/sozdanie-bota.html</link>
+      <description><![CDATA[Создать максимально простого бота для выкупа билетов на мероприятие на сайте ]]></description>
+      <guid>https://www.fl.ru/projects/5528169/sozdanie-bota.html</guid>
+      <category><![CDATA[Программирование / Python]]></category>
+      <pubDate>Thu, 05 Nov 2026 15:49:15 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[Массовое изменение данных в формах (Бюджет: 12 000  &#8381;)]]></title>
+      <link>https://www.fl.ru/projects/5527831/massovoe-izmenenie-dannyih-v-formah.html</link>
+      <description><![CDATA[1. Изменение формата отображения данных в форме Pyrus
+2. Копирование данных из "старых" полей в "новые"
+3. Настройка валидации заполнения данных (бот)]]></description>
+      <guid>https://www.fl.ru/projects/5527831/massovoe-izmenenie-dannyih-v-formah.html</guid>
+      <category><![CDATA[Программирование / Python]]></category>
+      <pubDate>Tue, 03 Nov 2026 09:26:08 GMT</pubDate>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,98 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-intake}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-intake}
+      POSTGRES_DB: ${POSTGRES_DB:-intake}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-intake} -d ${POSTGRES_DB:-intake}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build: .
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    environment: &app_env
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-intake}:${POSTGRES_PASSWORD:-intake}@postgres:5432/${POSTGRES_DB:-intake}
+      REDIS_URL: redis://redis:6379/0
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
+      FETCH_INTERVAL_MINUTES: ${FETCH_INTERVAL_MINUTES:-30}
+      SEND_MODE: confirmation
+      DATA_DIR: /data
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      HTTP_TIMEOUT_SECONDS: ${HTTP_TIMEOUT_SECONDS:-25}
+      HTTP_MIN_INTERVAL_SECONDS: ${HTTP_MIN_INTERVAL_SECONDS:-2}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    volumes:
+      - digests:/data
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=5)",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 25s
+
+  worker:
+    build: .
+    command: celery -A app.worker.celery_app worker --loglevel=INFO
+    environment: *app_env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - digests:/data
+
+  beat:
+    build: .
+    command: celery -A app.worker.celery_app beat --loglevel=INFO --schedule /data/celerybeat-schedule
+    environment: *app_env
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    volumes:
+      - digests:/data
+
+  bot:
+    build: .
+    command: python -m app.telegram.bot
+    environment: *app_env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - digests:/data
+
+volumes:
+  pgdata:
+  digests:

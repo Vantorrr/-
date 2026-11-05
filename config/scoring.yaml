@@ -1,0 +1,100 @@
+# Явная шкала 0–100. Сумма весов = 100.
+# Дубликаты отсекаются до начисления баллов.
+# Неизвестное поле не дорисовывается: в карточке остаётся «неизвестно»,
+# а в баллах у него отдельная нейтральная ячейка, не ноль и не максимум.
+
+threshold: 60
+
+weights:
+  budget: 25
+  buyer: 20
+  scope: 20
+  remote: 15
+  tech: 20
+
+budget_points:
+  unknown: 8
+  below_30k: 0
+  from_30k_to_100k: 10
+  from_100k_to_500k: 20
+  from_500k_to_3m: 25
+  above_3m: 22
+  cap_reaches_preferred: 16
+  range_overlaps_preferred: 20
+  floor_in_preferred: 20
+
+bounds:
+  small_rub: 30000
+  preferred_min_rub: 100000
+  mid_rub: 500000
+  preferred_max_rub: 3000000
+  absurd_low_rub: 1000
+  large_scope_max_rub: 30000
+
+# Только чтобы положить названную валюту в рублёвый диапазон оценки.
+# В карточке и в черновике сумма остаётся в исходной валюте.
+fx_rub:
+  USD: 90
+  EUR: 100
+
+buyer_points:
+  legal_entity: 20
+  unknown: 8
+  individual: 4
+
+scope_points:
+  clear: 20
+  partial: 10
+  vague: 0
+
+scope_limits:
+  clear_min_chars: 80
+  partial_min_chars: 40
+
+remote_points:
+  remote: 15
+  unknown: 8
+  office: 3
+
+tech_points:
+  strong: 20
+  one: 14
+  adjacent: 6
+  none: 0
+
+tech_categories:
+  fullstack: ["fullstack", "full-stack", "фуллстек", "веб-сервис", "интернет-магазин", "сайт"]
+  crm_erp: ["crm", "erp", "битрикс", "amocrm", "амосрм", "1с", "1c"]
+  mobile: ["ios", "android", "flutter", "react native", "мобильн"]
+  ai: ["llm", "нейросет", "chatgpt", "gpt", "машинн", "ии-агент", "ai-агент"]
+  integrations: ["интеграц", "api", "webhook", "эквайринг", "платеж"]
+  react_node_python: ["react", "node.js", "nodejs", "node", "python", "django", "fastapi", "typescript", "javascript"]
+  webgl: ["webgl", "three.js", "threejs", "вебгл", "3d"]
+
+tech_adjacent: ["php", "vue", "angular", "java", "kotlin", "swift", "golang", "laravel", "wordpress"]
+
+scope_verbs: ["разработ", "интегр", "внедр", "доработ", "созда", "напис", "собра", "автоматиз", "настро", "исправ", "дизайн", "верст"]
+scope_nouns: ["сайт", "бот", "crm", "erp", "приложен", "api", "сервис", "магазин", "портал", "1с", "битрикс", "python", "react", "моб"]
+
+strong_large_scope: ["интернет-магазин", "под ключ", "с нуля", "crm", "erp", "корпоративный портал"]
+medium_large_scope: ["мобильное приложение", "платформа", "маркетплейс"]
+
+closed_statuses: ["closed", "finished", "completed"]
+closed_patterns:
+  - "прием заявок заверш"
+  - "приём заявок заверш"
+  - "тендер заверш"
+  - "заказ закрыт"
+  - "исполнитель найден"
+
+unpaid_test_patterns: ["тестовое задание", "тестовое тз"]
+unpaid_markers: ["без оплат", "неоплач", "бесплатн", "за отзыв"]
+
+prepaid_markers: ["предоплат"]
+middleman_markers: ["посредник", "на карту", "на карточку", "через гаранта"]
+
+hard_exclude_patterns:
+  - "ботоферм"
+  - "накрутка отзыв"
+  - "обход капч"
+  - "кардинг"
